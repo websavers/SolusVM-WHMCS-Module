@@ -319,6 +319,50 @@ if ( $r["status"] == "success" ) {
                 </div>
             ';
         }
+        
+        if ( $r["type"] == "openvz" ) {
+            $templates = $solusvm->getTemplates();
+            $templates_options = "";
+            foreach ($templates as $template){
+              $templates_options .= "<option value='$template'>" . ucfirst($template) . "</option>\n";
+            }
+            $costemplate = '
+                <script type="text/javascript" src="/modules/servers/solusvmpro/js/ostemplate.js"></script>
+                <script type="text/javascript">
+                    window.solusvmpro_ostemplate(vserverid, {"solusvmpro_invalidOSTemplate": "' . $_LANG['solusvmpro_invalidOSTemplate'] . '","solusvmpro_change":"' . $_LANG['solusvmpro_change'] . '"}, token);
+                </script>
+                <div class="panel panel-default" id="displayostemplate">
+                    <div class="panel-heading" role="tab" id="headingFour">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#solusvmpro_accordion" href="#solusvmpro_collapseFour" aria-expanded="false" aria-controls="solusvmpro_collapseFour">
+                                ' . $_LANG['solusvmpro_hostname'] . '
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="solusvmpro_collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+                        <div class="panel-body">
+
+                            <div class="row">
+                                <div id="osTemplateMsgSuccess" class="alert alert-success" role="alert" style="display: none"></div>
+                                <div id="osTemplateMsgError" class="alert alert-danger" role="alert" style="display: none"></div>
+                            </div>
+                            <div class="row margin-10">
+                                <div class="col-xs-2"></div>
+                                <div class="col-xs-8">
+                                    <div class="form-group">
+                                        <label for="newostemplate">' . $_LANG['solusvmpro_newOSTemplate'] . '</label>
+                                        <select type="text" class="form-control" name="newostemplate" id="newostemplate">' .
+                                          $templates_options . '</select>
+                                    </div>
+                                    <button type="button" id="changeostemplate" class="btn btn-action">' . $_LANG['solusvmpro_change'] . '</button>
+                                </div>
+                                <div class="col-xs-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ';
+        }
 
         if ( $solusvm->getExtData( "controlpanelbutton-admin" ) != "" ) {
             $cpbutton = '<button type="button" class="btn btn-default" onclick="window.open(\'' . $solusvm->getExtData( "controlpanelbutton-admin" ) . '\', \'_blank\')">' . $_LANG['solusvmpro_controlPanel'] . '</button>';

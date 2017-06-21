@@ -1056,6 +1056,64 @@ function solusvmpro_Custom_ChangeVNCPassword( $params = '' ) {
 
 }
 
+function solusvmpro_Custom_ChangeOSTemplate( $params = '' ) {
+    global $_LANG;
+
+    $newostemplate  = $_GET['newostemplate'];
+    $check_section = SolusVM::ostemplate_verify( $newostemplate );
+    if ( $check_section ) {
+        ## The call string for the connection function
+
+        $callArray = array( "vserverid" => $_GET['vserverid'], "template" => $newostemplate );
+
+        $solusvm = new SolusVM( $params );
+
+        if ( $solusvm->getExtData( "clientfunctions" ) == "disable" ) {
+            $result = (object) array(
+                'success' => false,
+                'msg'     => $_LANG['solusvmpro_functionDisabled'],
+            );
+            exit( json_encode( $result ) );
+        }
+        if ( $solusvm->getExtData( "ostemplate" ) == "disable" ) {
+            $result = (object) array(
+                'success' => false,
+                'msg'     => $_LANG['solusvmpro_functionDisabled'],
+            );
+            exit( json_encode( $result ) );
+        }
+
+        $solusvm->apiCall( 'vserver-rebuild', $callArray );
+        $r = $solusvm->result;
+
+        $message = '';
+        if ( $r["status"] == "success" ) {
+            $solusvm->setOSTemplate( $newostemplate );
+            $message = $_LANG['solusvmpro_OSTemplateUpdated'];
+        } elseif ( $r["status"] == "error" && $r["statusmsg"] == "OS Template not specified" ) {
+            $message = $_LANG['solusvmpro_enterOSTemplate'];
+        } elseif ( $r["status"] == "error" && $r["statusmsg"] == "Not supported for this virtualization type" ) {
+            $message = $_LANG['solusvmpro_virtualizationTypeError'];
+        } else {
+            $message = $_LANG['solusvmpro_unknownError'];
+        }
+        $result = (object) array(
+            'success' => true,
+            'msg'     => $message,
+        );
+        exit( json_encode( $result ) );
+
+    } else {
+        $result = (object) array(
+            'success' => false,
+            'msg'     => $_LANG['solusvmpro_invalidOSTemplate'],
+        );
+        exit( json_encode( $result ) );
+
+    }
+
+}
+
 function solusvmpro_ClientArea( $params ) {
     $notCustomFuntions = [ 'reboot', 'shutdown', 'boot' ];
     if ( isset( $_GET['modop'] ) && ( $_GET['modop'] == 'custom' ) ) {

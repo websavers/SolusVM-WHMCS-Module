@@ -864,6 +864,14 @@ class SolusVM {
 
         return $is_valid;
     }
+    
+    public static function ostemplate_verify( $template = "" ) {
+        $is_valid = false;
+        
+        //do verification
+
+        return $is_valid;
+    }
 
     public static function validateRootPassword( $newRootPassword ) {
         $is_valid = false;
@@ -1001,6 +1009,21 @@ class SolusVM {
         }
 
         return $vt;
+    }
+    
+    public function getTemplates(){
+      
+      $callArray = array( "type" => $vt );
+      
+      ## List templates
+      $this->apiCall( 'listtemplates', $callArray );
+
+      if ( $solusvm->result["status"] == "success" ) {
+          return explode($solusvm->result["templates"]);
+      } else {
+          return $solusvm->rawResult;
+      }
+
     }
 
     public static function loadLang( $lang = null ) {
