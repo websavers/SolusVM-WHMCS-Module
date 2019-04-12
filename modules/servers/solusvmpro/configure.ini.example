@@ -1,0 +1,20 @@
+; This is a test configuration file
+; Comments start with ';'
+
+debug = true
+
+; UsageUpdate
+;enableUsageUpdate = true
+;updateIntervalDay = 2
+
+; Theme Customizations
+; Virtual Server color status (hex color)
+;statusOnlineColor = 0C0
+;statusOfflineColor = F00
+;statusDisabledColor = 000
+;statusUnavailableColor = F00
+
+; Progress Bar color section (hex color)
+;pbSuccessColor = 36e22d
+;pbWarningColor = f82812
+;pbDangerColor  = f8aa12

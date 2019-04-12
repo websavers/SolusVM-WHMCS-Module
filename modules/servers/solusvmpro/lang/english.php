@@ -96,3 +96,13 @@ $_LANG['solusvmpro_select_ostemplate_label']              = 'Select an OS Templa
 $_LANG['solusvmpro_cancel']                               = 'Cancel';
 $_LANG['solusvmpro_shutdown_confirm']                     = 'Are you sure you wish to power off this server?';
 $_LANG['solusvmpro_reboot_confirm']                       = 'Are you sure you wish to restart this server?';
+$_LANG['solusvmpro_rescueMode']                           = 'Rescue Mode';
+$_LANG['solusvmpro_rescueImage']                          = 'Rescue Image';
+$_LANG['solusvmpro_enable']                               = 'Enable';
+$_LANG['solusvmpro_disable']                              = 'Disable';
+$_LANG['solusvmpro_processing']                           = 'Processing...';
+$_LANG['solusvmpro_user']                                 = 'User';
+$_LANG['solusvmpro_port']                                 = 'Port';
+$_LANG['solusvmpro_rescueenabled']                        = 'Enabled - Rescue mode can take several minutes before it becomes accessible on the network';
+$_LANG['solusvmpro_rescuedisabled']                       = 'Disabled - The server is now rebooting into the original system';
+

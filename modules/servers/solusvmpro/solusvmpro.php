@@ -177,6 +177,7 @@ function solusvmpro_CreateAccount( $params ) {
         $cbandwidth = $solusvm->getCbandwidth();
         $ccpu       = $solusvm->getCcpu();
         $cextraip   = $solusvm->getCextraip();
+        $cnspeed    = $solusvm->getCnspeed();
 
         #########################################
 
@@ -252,6 +253,7 @@ function solusvmpro_CreateAccount( $params ) {
             "custombandwidth" => $cbandwidth,
             "customdiskspace" => $cdisk,
             "custommemory"    => $cmem,
+            "customnspeed"    => $cnspeed,
             "hvmt"            => "1",
             "type"            => $vt,
             "nodegroup"       => $buildGroup,
@@ -677,6 +679,7 @@ function solusvmpro_ChangePackage( $params ) {
         $cdisk      = $solusvm->getCdisk();
         $ccpu       = $solusvm->getCcpu();
         $cextraip   = $solusvm->getCextraip();
+        $cnspeed    = $solusvm->getCnspeed();
         #########################################
 
         //Apply custom resources
@@ -705,6 +708,14 @@ function solusvmpro_ChangePackage( $params ) {
 
             if ( $ccpu > 0 ){
                 $solusvm->apiCall( 'vserver-change-cpu', array( "cpu" => $ccpu, "vserverid" => $customField["vserverid"] ) );
+                if ( $solusvm->result["status"] != "success" ) {
+                    $resource_errors .= (string) $solusvm->result["statusmsg"];
+                }
+
+            }
+
+            if ( $cnspeed >= 0 ){
+                $solusvm->apiCall( 'vserver-change-nspeed', array( "customnspeed" => $cnspeed, "vserverid" => $customField["vserverid"] ) );
                 if ( $solusvm->result["status"] != "success" ) {
                     $resource_errors .= (string) $solusvm->result["statusmsg"];
                 }
@@ -1146,7 +1157,7 @@ function solusvmpro_ClientArea( $params ) {
 
                 if ( $solusvm->result["status"] == "success" ) {
                     $data = $solusvm->clientAreaCalculations( $solusvm->result );
-                    
+
                     return solusvmpro_customclientarea( $params, $data );
                 } else {
                     if ( function_exists( 'solusvmpro_customclientareaunavailable' ) ) {
@@ -1184,6 +1195,107 @@ function solusvmpro_ClientArea( $params ) {
 
         return $e->getMessage();
     }
+}
+
+/*
+ * Usage Update
+ * Info: https://developers.whmcs.com/provisioning-modules/usage-update/
+ * Run Manually: /admin/reports.php?report=disk_usage_summary&action=updatestats
+ */
+
+function solusvmpro_UsageUpdate($params)
+{
+    $solusvm = new SolusVM($params);
+
+    if (!isset($solusvm->configIni['enableUsageUpdate']) || !$solusvm->configIni['enableUsageUpdate']) {
+        return false;
+    }
+    $ownerRowsHosting = Capsule::table('tblhosting')->where('domainstatus', 'Active')->where('server', $params['serverid']);
+
+    if (isset($solusvm->configIni['updateIntervalDay'])) {
+        $ownerRowsHosting->whereRaw('lastupdate < DATE_ADD(CURDATE(),INTERVAL -' . $solusvm->configIni['updateIntervalDay'] . ' DAY)');
+    }
+    $ownerRows = $ownerRowsHosting->get();
+
+    if ($ownerRows) {
+        foreach ($ownerRows as $ownerRow) {
+            if (!$ownerRow->id) {
+                continue;
+            }
+
+            $vserverFieldRow = Capsule::table('tblcustomfields')
+                ->where('relid', $ownerRow->packageid)->where('fieldname', 'vserverid')->first();
+            $vserverValueRow = Capsule::table('tblcustomfieldsvalues')
+                ->where('fieldid', $vserverFieldRow->id)->where('relid', $ownerRow->id)->first();
+
+            $callArray = ['vserverid' => $vserverValueRow->value, 'nographs' => true, 'rdtype' => 'json'];
+            $res = $solusvm->apiCall('vserver-infoall', $callArray);
+            $r = json_decode($res);
+
+            $bandwidthData = explode(',', $r->bandwidth);
+            $bwusage = round($bandwidthData[1] / 1024 ** 2, 0, PHP_ROUND_HALF_UP);
+            $bwlimit = round($bandwidthData[0] / 1024 ** 2, 0, PHP_ROUND_HALF_UP);
+
+            $hddData = explode(',', $r->hdd);
+            $diskusage = round($hddData[1] / 1024 ** 2, 0, PHP_ROUND_HALF_UP);
+            $disklimit = round($hddData[0] / 1024 ** 2, 0, PHP_ROUND_HALF_UP);
+
+            Capsule::table('tblhosting')
+                ->where('id', $ownerRow->id)
+                ->update(
+                    [
+                        'bwusage' => $bwusage,
+                        'bwlimit' => $bwlimit,
+                        'diskusage' => $diskusage,
+                        'disklimit' => $disklimit,
+                        'lastupdate' => date('Y-m-d H:i:s')
+                    ]
+                );
+        }
+    }
+}
+
+/*
+ * Rescue Mode
+ * Info: https://docs.solusvm.com/display/DOCS/Rescue+Mode
+ */
+
+function solusvmpro_Custom_ChangeRescueMode( $params = '' ) {
+    global $_LANG;
+
+    $rescueAction      = $_GET['rescueAction'];
+    $rescueValue       = $_GET['rescueValue'];
+
+    if ( $rescueValue && $rescueAction) {
+        // The call string for the connection function
+        $callArray = array( 'vserverid' => $_GET['vserverid'], $rescueAction => $rescueValue );
+        $solusvm = new SolusVM( $params );
+
+        $solusvm->apiCall( 'vserver-rescue', $callArray );
+        $r = $solusvm->result;
+
+        if ( $r['status'] == 'success' ) {
+            $message = $_LANG['solusvmpro_rescueenabled'];
+            if($rescueAction == 'rescuedisable') {
+                $message = $_LANG['solusvmpro_rescuedisabled'];
+            }
+        } elseif ( $r['status'] == 'error') {
+            $message = $r['statusmsg'];
+        } else {
+            $message = $_LANG['solusvmpro_unknownError'];
+        }
+        $result = (object) array(
+            'success' => true,
+            'msg'     => $message,
+        );
+        exit(json_encode($result));
+    }
+
+    $result = (object)[
+        'success' => false,
+        'msg' => $_LANG['solusvmpro_unknownError'],
+    ];
+    exit(json_encode($result));
 }
 
 if ( ! function_exists( 'solusvmpro_customclientareaunavailable' ) ) {
