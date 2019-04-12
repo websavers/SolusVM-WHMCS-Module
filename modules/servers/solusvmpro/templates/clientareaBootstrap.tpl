@@ -297,7 +297,7 @@
                             </div>
                         </div>
                     </div>
-                    {if $debug}
+                    {if $data.debug}
                     <div class="panel panel-default" id="displayostemplate">
                         <div class="panel-heading" role="tab" id="headingFour">
                             <h4 class="panel-title">
@@ -322,7 +322,7 @@
                                             <label for="newostemplate">{$LANG.solusvmpro_select_ostemplate_label}</label>
                                             <select type="text" class="form-control" name="newostemplate" id="newostemplate"></select>
                                         </div>
-                                        <button type="button" id="changeostemplate" class="btn btn-action">' . $_LANG['solusvmpro_change'] . '</button>
+                                        <button type="button" id="changeostemplate" class="btn btn-action">{$LANG.solusvmpro_change}</button>
                                     </div>
                                     <div class="col-xs-2"></div>
                                 </div>

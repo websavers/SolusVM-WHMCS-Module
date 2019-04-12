@@ -1208,6 +1208,10 @@ function solusvmpro_ClientArea( $params ) {
                 $data = array(
                     'vserverid' => $customField["vserverid"],
                 );
+                
+                if ($_GET['debug']){
+                  $data['debug'] = true;
+                }
 
                 return array(
                     'templatefile' => 'templates/clientareaBootstrap.tpl',
