@@ -898,10 +898,14 @@ class SolusVM {
         return $is_valid;
     }
     
-    public static function ostemplate_verify( $template = "" ) {
+    public function ostemplate_verify( $template = "", $type ) {
         $is_valid = false;
         
-        //do verification
+        $response = $this->getTemplates($type);
+        if ($response->success){
+          $templates_arr = explode(',', $response->msg);
+          if (in_array($template, $templates_arr)) $is_valid = true;
+        }
 
         return $is_valid;
     }
@@ -1027,6 +1031,30 @@ class SolusVM {
                    );
         }
     }
+    
+    public function setOSTemplate( $newostemplate ) {
+      
+        if ( ! empty( $this->serviceid ) ) {
+          
+          //Get configoption id for the OS template and its value ID
+          $configoption = Capsule::table('tblproductconfigoptionssub')
+                 ->select('tblproductconfigoptionssub.configid', 'tblproductconfigoptionssub.id as optionid')
+                 ->where('tblproductconfigoptionssub.optionname', 'LIKE', "$newostemplate%")
+                 ->first();
+          
+          if ( !empty($configoption) ){ 
+            //logActivity("New OS Template: $newostemplate | Service ID: {$this->serviceid} | Config Option: $configoption->configid -> $configoption->optionid");
+            $results = localAPI('UpdateClientProduct', array(
+              'serviceid' => $this->serviceid,
+              'configoptions' => base64_encode(serialize(array(
+                  $configoption->configid => $configoption->optionid,
+              ))),
+            ));
+          }
+          
+        } // has serviceid
+        
+    }
 
     public function getVT() {
         $vt = '';
@@ -1043,17 +1071,26 @@ class SolusVM {
         return $vt;
     }
     
-    public function getTemplates(){
+    /** 
+     * $vt is the virtualization type like "openvz"
+     */
+    public function getTemplates($vt){
       
       $callArray = array( "type" => $vt );
       
       ## List templates
       $this->apiCall( 'listtemplates', $callArray );
-
-      if ( $solusvm->result["status"] == "success" ) {
-          return explode($solusvm->result["templates"]);
+            
+      if ( $this->result["status"] == "success" ) {
+        return (object) array(
+            'success' => true,
+            'msg'     => $this->result["templates"],
+        );
       } else {
-          return $solusvm->rawResult;
+        return (object) array(
+            'success' => false,
+            'msg'     => $this->result["statusmessage"],
+        );
       }
 
     }

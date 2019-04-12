@@ -33,6 +33,10 @@
                 'solusvmpro_invalidHostname': '{/literal}{$LANG.solusvmpro_invalidHostname}{literal}',
                 'solusvmpro_change': '{/literal}{$LANG.solusvmpro_change}{literal}'
             });
+            window.solusvmpro_ostemplate(vserverid, {
+                'solusvmpro_invalidOSTemplate': '{/literal}{$LANG.solusvmpro_invalidOSTemplate}{literal}',
+                'solusvmpro_change': '{/literal}{$LANG.solusvmpro_change}{literal}'
+            });
             window.solusvmpro_rootpassword(vserverid, {
                 'solusvmpro_invalidRootpassword': '{/literal}{$LANG.solusvmpro_invalidRootpassword}{literal}',
                 'solusvmpro_change': '{/literal}{$LANG.solusvmpro_change}{literal}',
@@ -322,7 +326,11 @@
                                             <label for="newostemplate">{$LANG.solusvmpro_select_ostemplate_label}</label>
                                             <select type="text" class="form-control" name="newostemplate" id="newostemplate"></select>
                                         </div>
-                                        <button type="button" id="changeostemplate" class="btn btn-action">{$LANG.solusvmpro_change}</button>
+                                        <div class="form-group">
+                                          <input type="checkbox" id="consequencesostemplate" />
+                                          <label for="consequencesostemplate">{$LANG.solusvmpro_ostemplate_confirm}</label>
+                                        </div>
+                                        <button type="button" id="changeostemplate" class="btn btn-action" disabled="disabled">{$LANG.solusvmpro_change}</button>
                                     </div>
                                     <div class="col-xs-2"></div>
                                 </div>
@@ -456,41 +464,7 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="panel panel-default" id="displayoschanger" style="display: none">
-                        <div class="panel-heading" role="tab" id="headingSeven">
-                            <h4 class="panel-title">
-                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#solusvmpro_accordion" href="#solusvmpro_collapseSeven" aria-expanded="false" aria-controls="solusvmpro_collapseSeven">
-                                    {$LANG.solusvmpro_oschanger}
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="solusvmpro_collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
-                            <div class="panel-body">
-
-                                <div class="row">
-                                    <div id="osTemplateMsgSuccess" class="alert alert-success" role="alert" style="display: none"></div>
-                                    <div id="osTemplateMsgError" class="alert alert-danger" role="alert" style="display: none"></div>
-                                </div>
-                                <div class="row margin-10">
-                                    <div class="col-xs-2"></div>
-                                    <div class="col-xs-8">
-                                        <div class="form-group">
-                                            <label for="newostemplate">{$LANG.solusvmpro_newOSTemplate}</label>
-                                            <select class="form-control" name="newostemplate" id="newostemplate"
-                                                   placeholder="{$LANG.solusvmpro_selectOSTemplate}">
-                                                   <option value="">Option</option>
-                                            </select>
-                                        </div>
-                                        <button type="button" id="changehostname" class="btn btn-action">{$LANG.solusvmpro_change}</button>
-                                    </div>
-                                    <div class="col-xs-2"></div>
-                                </div>
-
-
-                            </div>
-                        </div>
-                    </div>
+                  
                 </div>
             </div>
         </div>
