@@ -1,5 +1,6 @@
 <script type="text/javascript" src="modules/servers/solusvmpro/js/get_user_data.js"></script>
 <script type="text/javascript" src="modules/servers/solusvmpro/js/hostname.js"></script>
+<script type="text/javascript" src="modules/servers/solusvmpro/js/ostemplate.js"></script>
 <script type="text/javascript" src="modules/servers/solusvmpro/js/rootpassword.js"></script>
 <script type="text/javascript" src="modules/servers/solusvmpro/js/vncpassword.js"></script>
 <script type="text/javascript" src="modules/servers/solusvmpro/js/rescuemode.js"></script>
@@ -308,6 +309,39 @@
                             </div>
                         </div>
                     </div>
+                    {if $debug}
+                    <div class="panel panel-default" id="displayostemplate">
+                        <div class="panel-heading" role="tab" id="headingFour">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" 
+                                  data-parent="#solusvmpro_accordion" href="#solusvmpro_collapseFour" 
+                                  aria-expanded="false" aria-controls="solusvmpro_collapseFour">
+                                    {$LANG.solusvmpro_change_ostemplate_label}
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="solusvmpro_collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+                            <div class="panel-body">
+
+                                <div class="row">
+                                    <div id="osTemplateMsgSuccess" class="alert alert-success" role="alert" style="display: none"></div>
+                                    <div id="osTemplateMsgError" class="alert alert-danger" role="alert" style="display: none"></div>
+                                </div>
+                                <div class="row margin-10">
+                                    <div class="col-xs-2"></div>
+                                    <div class="col-xs-8">
+                                        <div class="form-group">
+                                            <label for="newostemplate">{$LANG.solusvmpro_select_ostemplate_label}</label>
+                                            <select type="text" class="form-control" name="newostemplate" id="newostemplate"></select>
+                                        </div>
+                                        <button type="button" id="changeostemplate" class="btn btn-action">' . $_LANG['solusvmpro_change'] . '</button>
+                                    </div>
+                                    <div class="col-xs-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/if}
                     <div class="panel panel-default" id="displayvncpassword" style="display: none">
                         <div class="panel-heading" role="tab" id="headingFive">
                             <h4 class="panel-title">

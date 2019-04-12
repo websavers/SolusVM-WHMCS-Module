@@ -376,11 +376,6 @@ if ($r["status"] == "success") {
         }
         
         if ( $r["type"] == "openvz" ) {
-            $templates = $solusvm->getTemplates();
-            $templates_options = "";
-            foreach ($templates as $template){
-              $templates_options .= "<option value='$template'>" . ucfirst($template) . "</option>\n";
-            }
             $costemplate = '
                 <script type="text/javascript" src="/modules/servers/solusvmpro/js/ostemplate.js"></script>
                 <script type="text/javascript">
@@ -406,8 +401,7 @@ if ($r["status"] == "success") {
                                 <div class="col-xs-8">
                                     <div class="form-group">
                                         <label for="newostemplate">' . $_LANG['solusvmpro_select_ostemplate_label'] . '</label>
-                                        <select type="text" class="form-control" name="newostemplate" id="newostemplate">' .
-                                          $templates_options . '</select>
+                                        <select type="text" class="form-control" name="newostemplate" id="newostemplate"></select>
                                     </div>
                                     <button type="button" id="changeostemplate" class="btn btn-action">' . $_LANG['solusvmpro_change'] . '</button>
                                 </div>
@@ -448,7 +442,7 @@ if ($r["status"] == "success") {
             </script>
             
             <div class="panel-group" id="solusvmpro_accordion" role="tablist" aria-multiselectable="true">
-                ' . $costemplate . $rpass . $chostname . $cpass . $rescuemode . '
+                ' . $rpass . $chostname . $costemplate . $cpass . $rescuemode . '
             </div>
 
             ' . $vmstatus . $mem . $hdd . $bwshow . $node . $graphs;

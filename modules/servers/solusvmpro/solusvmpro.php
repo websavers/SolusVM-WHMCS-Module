@@ -1141,6 +1141,43 @@ function solusvmpro_Custom_ChangeVNCPassword( $params = '' ) {
 
 }
 
+function solusvmpro_Custom_ListOSTemplates( $params = '' ){
+  
+  $packageconfigoption = initConfigOption();
+
+  $vt = '';
+  if ( $packageconfigoption[5] == "OpenVZ" ) {
+      $vt = "openvz";
+  } elseif ( $packageconfigoption[5] == "Xen-PV" ) {
+      $vt = "xen";
+  } elseif ( $packageconfigoption[5] == "Xen-HVM" ) {
+      $vt = "xen hvm";
+  } elseif ( $packageconfigoption[5] == "KVM" ) {
+      $vt = "kvm";
+  }
+  
+  $callArray = array( "type" => $vt );
+  
+  $solusvm = new SolusVM( $params );
+  
+  ## List templates
+  $solusvm->apiCall( 'listtemplates', $callArray );
+
+  if ( $solusvm->result["status"] == "success" ) {
+    $result = (object) array(
+        'success' => true,
+        'msg'     => $solusvm->result["templates"],
+    );
+  } else {
+    $result = (object) array(
+        'success' => false,
+        'msg'     => $solusvm->result["statusmessage"],
+    );
+  }
+  exit( json_encode( $result ) );
+  
+}
+
 function solusvmpro_Custom_ChangeOSTemplate( $params = '' ) {
     global $_LANG;
 

@@ -52,6 +52,7 @@ $_LANG['solusvmpro_confirmErrorPassword']                 = 'Please check that y
 $_LANG['solusvmpro_virtualizationTypeError']              = 'Function not supported for this virtualization type';
 $_LANG['solusvmpro_unknownError']                         = 'Unknown error. Contact support';
 $_LANG['solusvmpro_invalidHostname']                      = 'Invalid Hostname';
+$_LANG['solusvmpro_invalidOSTemplate']                    = 'Invalid OS Template';
 $_LANG['solusvmpro_invalidRootpassword']                  = 'Invalid root password. Root password must contain only letters, numbers, dashes and underscores. At least 6 characters long';
 $_LANG['solusvmpro_invalidVNCpassword']                   = 'Invalid VNC password. VNC password must contain only letters, numbers, dashes and underscores. At least 6 characters long';
 $_LANG['solusvmpro_newHostname']                          = 'New Hostname';
