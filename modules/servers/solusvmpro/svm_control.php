@@ -335,7 +335,7 @@ if ( $r["status"] == "success" ) {
                     <div class="panel-heading" role="tab" id="headingFour">
                         <h4 class="panel-title">
                             <a class="collapsed" role="button" data-toggle="collapse" data-parent="#solusvmpro_accordion" href="#solusvmpro_collapseFour" aria-expanded="false" aria-controls="solusvmpro_collapseFour">
-                                ' . $_LANG['solusvmpro_hostname'] . '
+                                ' . $_LANG['solusvmpro_change_ostemplate_label'] . '
                             </a>
                         </h4>
                     </div>
@@ -350,7 +350,7 @@ if ( $r["status"] == "success" ) {
                                 <div class="col-xs-2"></div>
                                 <div class="col-xs-8">
                                     <div class="form-group">
-                                        <label for="newostemplate">' . $_LANG['solusvmpro_newOSTemplate'] . '</label>
+                                        <label for="newostemplate">' . $_LANG['solusvmpro_select_ostemplate_label'] . '</label>
                                         <select type="text" class="form-control" name="newostemplate" id="newostemplate">' .
                                           $templates_options . '</select>
                                     </div>
@@ -393,7 +393,7 @@ if ( $r["status"] == "success" ) {
             </script>
             
             <div class="panel-group" id="solusvmpro_accordion" role="tablist" aria-multiselectable="true">
-                ' . $rpass . $chostname . $cpass . '
+                ' . $costemplate . $rpass . $chostname . $cpass . '
             </div>
 
             ' . $vmstatus . $mem . $hdd . $bwshow . $node . $graphs;
