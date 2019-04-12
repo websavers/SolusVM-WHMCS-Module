@@ -181,7 +181,7 @@ if ($r["status"] == "success") {
         } else {
             $console = '<button type="button" class="btn btn-default" onclick="window.open(\'../modules/servers/solusvmpro/vnc.php?id=' . $serviceid . '&uid=' . $uid . '\', \'_blank\',\'width=800,height=600,status=no,location=no,toolbar=no,menubar=no,,scrollbars=1,resizable=yes\')">' . $_LANG['solusvmpro_vnc'] . '</button>';
             $cpass = '
-                <script type="text/javascript" src="/modules/servers/solusvmpro/js/vncpassword.js"></script>
+                <script type="text/javascript" src="../modules/servers/solusvmpro/js/vncpassword.js"></script>
                 <script type="text/javascript">
                     window.solusvmpro_vncpassword(vserverid, {"solusvmpro_invalidVNCpassword": "' . $_LANG['solusvmpro_invalidVNCpassword'] . '","solusvmpro_change":"' . $_LANG['solusvmpro_change'] . '","solusvmpro_confirmVNCPassword":"' . $_LANG['solusvmpro_confirmVNCPassword'] . '","solusvmpro_confirmErrorPassword":"' . $_LANG['solusvmpro_confirmErrorPassword'] . '","solusvmpro_confirmPassword":"' . $_LANG['solusvmpro_confirmPassword'] . '"}, token);
                 </script>
@@ -261,7 +261,7 @@ if ($r["status"] == "success") {
             }
 
             $rescuemode = '
-                <script type="text/javascript" src="/modules/servers/solusvmpro/js/rescuemode.js"></script>
+                <script type="text/javascript" src="../modules/servers/solusvmpro/js/rescuemode.js"></script>
                 <script type="text/javascript">
                     window.solusvmpro_rescuemode(vserverid, {"solusvmpro_refresh": "'. $_LANG['solusvmpro_refresh'] .'", "solusvmpro_processing": "' . $_LANG['solusvmpro_processing'] . '"}, token, "adminArea");
                 </script>
@@ -287,7 +287,7 @@ if ($r["status"] == "success") {
 
         if ($r["type"] == "openvz" || $r["type"] == "xen") {
             $rpass = '
-                <script type="text/javascript" src="/modules/servers/solusvmpro/js/rootpassword.js"></script>
+                <script type="text/javascript" src="../modules/servers/solusvmpro/js/rootpassword.js"></script>
                 <script type="text/javascript">
                     window.solusvmpro_rootpassword(vserverid, {"solusvmpro_invalidRootpassword": "' . $_LANG['solusvmpro_invalidRootpassword'] . '","solusvmpro_change":"' . $_LANG['solusvmpro_change'] . '","solusvmpro_confirmRootPassword":"' . $_LANG['solusvmpro_confirmRootPassword'] . '","solusvmpro_confirmErrorPassword":"' . $_LANG['solusvmpro_confirmErrorPassword'] . '","solusvmpro_confirmPassword":"' . $_LANG['solusvmpro_confirmPassword'] . '"}, token);
                 </script>
@@ -338,7 +338,7 @@ if ($r["status"] == "success") {
 
         if ($r["type"] == "openvz" || $r["type"] == "xen") {
             $chostname = '
-                <script type="text/javascript" src="/modules/servers/solusvmpro/js/hostname.js"></script>
+                <script type="text/javascript" src="../modules/servers/solusvmpro/js/hostname.js"></script>
                 <script type="text/javascript">
                     window.solusvmpro_hostname(vserverid, {"solusvmpro_invalidHostname": "' . $_LANG['solusvmpro_invalidHostname'] . '","solusvmpro_change":"' . $_LANG['solusvmpro_change'] . '"}, token);
                 </script>
@@ -377,7 +377,7 @@ if ($r["status"] == "success") {
         
         if ( $r["type"] == "openvz" ) {
             $costemplate = '
-                <script type="text/javascript" src="/modules/servers/solusvmpro/js/ostemplate.js"></script>
+                <script type="text/javascript" src="../modules/servers/solusvmpro/js/ostemplate.js"></script>
                 <script type="text/javascript">
                     window.solusvmpro_ostemplate(vserverid, {"solusvmpro_invalidOSTemplate": "' . $_LANG['solusvmpro_invalidOSTemplate'] . '","solusvmpro_change":"' . $_LANG['solusvmpro_change'] . '"}, token);
                 </script>
@@ -402,6 +402,10 @@ if ($r["status"] == "success") {
                                     <div class="form-group">
                                         <label for="newostemplate">' . $_LANG['solusvmpro_select_ostemplate_label'] . '</label>
                                         <select type="text" class="form-control" name="newostemplate" id="newostemplate"></select>
+                                    </div>
+                                    <div class="form-group">
+                                          <input type="checkbox" id="consequencesostemplate" />
+                                          <label for="consequencesostemplate">' . $_LANG['solusvmpro_ostemplate_confirm'] . '</label>
                                     </div>
                                     <button type="button" id="changeostemplate" class="btn btn-action">' . $_LANG['solusvmpro_change'] . '</button>
                                 </div>

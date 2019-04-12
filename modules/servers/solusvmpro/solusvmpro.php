@@ -29,6 +29,7 @@ function initConfigOption()
     }else{
         $data = Capsule::table('tblproducts')->where('servertype', 'solusvmpro')->where('id', $_POST['id'])->get();
     }
+    
     $packageconfigoption = [];
     if(is_array($data) && count($data) > 0) {
         $packageconfigoption[1] = $data[0]->configoption1;
@@ -1142,39 +1143,45 @@ function solusvmpro_Custom_ChangeVNCPassword( $params = '' ) {
 }
 
 function solusvmpro_Custom_ListOSTemplates( $params = '' ){
+    
+  $vt = solusvmpro_Custom_GetVirtType($params['configoption5']);
   
-  $packageconfigoption = initConfigOption();
-
-  $vt = '';
-  if ( $packageconfigoption[5] == "OpenVZ" ) {
-      $vt = "openvz";
-  } elseif ( $packageconfigoption[5] == "Xen-PV" ) {
-      $vt = "xen";
-  } elseif ( $packageconfigoption[5] == "Xen-HVM" ) {
-      $vt = "xen hvm";
-  } elseif ( $packageconfigoption[5] == "KVM" ) {
-      $vt = "kvm";
-  }
-  
-  $callArray = array( "type" => $vt );
-  
+  /* This would get a live list of templates from the server. We want local 'available' options.
   $solusvm = new SolusVM( $params );
-  
-  ## List templates
-  $solusvm->apiCall( 'listtemplates', $callArray );
+  $result = $solusvm->getTemplates($vt);
+  exit( json_encode( $result ) );
+  */
 
-  if ( $solusvm->result["status"] == "success" ) {
-    $result = (object) array(
+  $results = localAPI('GetProducts', array(
+      'pid' => $params['pid'],
+  ));
+  
+  $templates = array();
+  $out = "";
+  if ($results['result'] == 'success'){
+    foreach($results['products']['product'][0]['configoptions']['configoption'] as $oslist){
+      if ($oslist['name'] == 'Operating System'){
+        foreach ($oslist['options']['option'] as $os){
+          $templates[$os['id']] = array(
+            'name' => $os['name'],
+            'sysname' => $os['required'],
+          );
+        }
+      }
+    }
+    $out = array(
         'success' => true,
-        'msg'     => $solusvm->result["templates"],
-    );
-  } else {
-    $result = (object) array(
-        'success' => false,
-        'msg'     => $solusvm->result["statusmessage"],
+        'msg'     => $templates,
     );
   }
-  exit( json_encode( $result ) );
+  else{
+    $out = array(
+        'success' => false,
+        'msg'     => 'Unable to obtain list of templates from WHMCS.',
+    );
+  }
+
+  exit( json_encode($out) );
   
 }
 
@@ -1182,13 +1189,15 @@ function solusvmpro_Custom_ChangeOSTemplate( $params = '' ) {
     global $_LANG;
 
     $newostemplate  = $_GET['newostemplate'];
-    $check_section = SolusVM::ostemplate_verify( $newostemplate );
+    $vt             = solusvmpro_Custom_GetVirtType($params['configoption5']);
+    $solusvm        = new SolusVM( $params );
+    
+    $check_section = $solusvm->ostemplate_verify( $newostemplate, $vt );
+    
     if ( $check_section ) {
         ## The call string for the connection function
 
         $callArray = array( "vserverid" => $_GET['vserverid'], "template" => $newostemplate );
-
-        $solusvm = new SolusVM( $params );
 
         if ( $solusvm->getExtData( "clientfunctions" ) == "disable" ) {
             $result = (object) array(
@@ -1208,19 +1217,21 @@ function solusvmpro_Custom_ChangeOSTemplate( $params = '' ) {
         $solusvm->apiCall( 'vserver-rebuild', $callArray );
         $r = $solusvm->result;
 
+        $success = false;
         $message = '';
         if ( $r["status"] == "success" ) {
-            $solusvm->setOSTemplate( $newostemplate );
+            $solusvm->setOSTemplate( $newostemplate ); //Set config option in WHMCS to new template now.
+            $success = true;
             $message = $_LANG['solusvmpro_OSTemplateUpdated'];
         } elseif ( $r["status"] == "error" && $r["statusmsg"] == "OS Template not specified" ) {
             $message = $_LANG['solusvmpro_enterOSTemplate'];
         } elseif ( $r["status"] == "error" && $r["statusmsg"] == "Not supported for this virtualization type" ) {
             $message = $_LANG['solusvmpro_virtualizationTypeError'];
         } else {
-            $message = $_LANG['solusvmpro_unknownError'];
+            $message = $r["statusmsg"];
         }
         $result = (object) array(
-            'success' => true,
+            'success' => $success,
             'msg'     => $message,
         );
         exit( json_encode( $result ) );
@@ -1282,6 +1293,10 @@ function solusvmpro_ClientArea( $params ) {
                 $data = array(
                     'vserverid' => $customField["vserverid"],
                 );
+                
+                if ($_GET['debug']){
+                  $data['debug'] = true;
+                }
 
                 return array(
                     'templatefile' => 'templates/clientareaBootstrap.tpl',
@@ -1407,6 +1422,20 @@ function solusvmpro_Custom_ChangeRescueMode( $params = '' ) {
         'msg' => $_LANG['solusvmpro_unknownError'],
     ];
     exit(json_encode($result));
+}
+
+function solusvmpro_Custom_GetVirtType($packageconfigoption){
+  $vt = '';
+  if ( $packageconfigoption == "OpenVZ" ) {
+      $vt = "openvz";
+  } elseif ( $packageconfigoption == "Xen-PV" ) {
+      $vt = "xen";
+  } elseif ( $packageconfigoption == "Xen-HVM" ) {
+      $vt = "xen hvm";
+  } elseif ( $packageconfigoption == "KVM" ) {
+      $vt = "kvm";
+  }
+  return $vt;
 }
 
 if ( ! function_exists( 'solusvmpro_customclientareaunavailable' ) ) {

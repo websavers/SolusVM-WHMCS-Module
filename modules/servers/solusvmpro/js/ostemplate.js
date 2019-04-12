@@ -19,7 +19,9 @@ $(function () {
             cache: false,
             dataType: 'json'/*,
              timeout: 2000*/
-        }).done(function (data) {
+        }).done(function (data){
+        
+            var button = $('#changeostemplate');
 
             var dataMsg = '';
             if (data.hasOwnProperty("msg")) {
@@ -33,10 +35,14 @@ $(function () {
             
             var templates_options = "";
             $.each(dataMsg, function (index, template){
-              templates_options += "<option value='" + template + "'>" + $template + "</option>\n";
+              templates_options += "<option value='" + template.sysname + "'>" + template.name + "</option>\n";
             });
             
             $('select#newostemplate').append(templates_options); //insert to selection dropdown.
+            
+            $('#consequencesostemplate').click(function(){
+                button.prop('disabled', false);
+            });
             
             //showSuccessOrErrorMsg(dataSuccess, dataMsg);
 /*
@@ -53,11 +59,11 @@ $(function () {
             var newostemplate = $('#newostemplate').val();
             newostemplate = newostemplate.trim();
 
-            var msgSuccess = $('#ostemplateMsgSuccess');
-            var msgError = $('#ostemplateMsgError');
+            var msgSuccess = $('#osTemplateMsgSuccess');
+            var msgError = $('#osTemplateMsgError');
             msgSuccess.hide();
             msgError.hide();
-            var showSuccessOrErrorMsg = function (success, msg) {
+            var showSuccessOrErrorMsg = function(success, msg) {
                 msgSuccess.hide();
                 msgError.hide();
                 if (success) {
@@ -79,7 +85,7 @@ $(function () {
                 vserverid: vserverid,
                 modop: 'custom',
                 a: 'ChangeOSTemplate',
-                newhostname: newostemplate,
+                newostemplate: newostemplate,
                 ajax: 1,
                 ac: 'Custom_ChangeOSTemplate'
             };
