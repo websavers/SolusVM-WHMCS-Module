@@ -40,7 +40,7 @@ $(function () {
             
             $('select#newostemplate').append(templates_options); //insert to selection dropdown.
             
-            $('#consequencesostemplate').click(function(){
+            $('#consequencesostemplate').change(function(){
               if ( $(this).is(":checked") ) button.prop('disabled', false);
               else button.prop('disabled', true);
             });
