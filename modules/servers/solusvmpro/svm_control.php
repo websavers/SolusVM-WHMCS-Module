@@ -405,7 +405,7 @@ if ($r["status"] == "success") {
                                     </div>
                                     <div class="form-group">
                                           <input type="checkbox" id="consequencesostemplate" />
-                                          <label for="consequencesostemplate">' . $_LANG['solusvmpro_ostemplate_confirm'] . '</label>
+                                          <label for="consequencesostemplate" style="display:inline">' . $_LANG['solusvmpro_ostemplate_confirm'] . '</label>
                                     </div>
                                     <button type="button" id="changeostemplate" class="btn btn-action">' . $_LANG['solusvmpro_change'] . '</button>
                                 </div>

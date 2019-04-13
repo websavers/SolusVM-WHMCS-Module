@@ -41,14 +41,10 @@ $(function () {
             $('select#newostemplate').append(templates_options); //insert to selection dropdown.
             
             $('#consequencesostemplate').click(function(){
-                button.prop('disabled', false);
+              if ( $(this).is(":checked") ) button.prop('disabled', false);
+              else button.prop('disabled', true);
             });
             
-            //showSuccessOrErrorMsg(dataSuccess, dataMsg);
-/*
-            button.html(lang['solusvmpro_change']);
-            button.prop('disabled', false);
-*/
         }).fail(function (jqXHR, textStatus) {
             //console.log(jqXHR);
             //console.log(textStatus);
