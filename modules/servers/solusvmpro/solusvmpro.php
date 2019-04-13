@@ -1162,10 +1162,12 @@ function solusvmpro_Custom_ListOSTemplates( $params = '' ){
     foreach($results['products']['product'][0]['configoptions']['configoption'] as $oslist){
       if ($oslist['name'] == 'Operating System'){
         foreach ($oslist['options']['option'] as $os){
-          $templates[$os['id']] = array(
-            'name' => $os['name'],
-            'sysname' => $os['required'],
-          );
+          if (!$os['hidden']){ //The 'hidden' value does not exist in the array yet. Hoping WHMCS will add it.
+            $templates[$os['id']] = array(
+              'name' => $os['name'],
+              'sysname' => $os['required'],
+            );
+          }
         }
       }
     }
