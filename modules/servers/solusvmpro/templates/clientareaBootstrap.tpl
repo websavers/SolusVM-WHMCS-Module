@@ -301,7 +301,6 @@
                             </div>
                         </div>
                     </div>
-                    {if $data.debug}
                     <div class="panel panel-default" id="displayostemplate">
                         <div class="panel-heading" role="tab" id="headingFour">
                             <h4 class="panel-title">
@@ -337,7 +336,6 @@
                             </div>
                         </div>
                     </div>
-                    {/if}
                     <div class="panel panel-default" id="displayvncpassword" style="display: none">
                         <div class="panel-heading" role="tab" id="headingFive">
                             <h4 class="panel-title">
