@@ -102,6 +102,13 @@
     <div class="col-md-9" id="displayStateUnavailable" style="display: none">
         <strong>{$LANG.solusvmpro_unavailable}</strong>
     </div>
+    
+    <div class="col-md-3">
+        {$LANG.solusvmpro_node}
+    </div>
+    <div class="col-md-9" id="displayNode">
+        {$LANG.solusvmpro_loading}
+    </div>
 
     <div id="displaybandwidthbar" style="display: none">
         <div class="col-md-3 margin-top-20">

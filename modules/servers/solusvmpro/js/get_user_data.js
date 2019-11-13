@@ -12,6 +12,8 @@ $(function () {
              timeout: 2000*/
         }).done(function (data) {
             $('#displayState').html(data.displaystatus);
+            
+            $('#displayNode').html(data.node);
 
             if (data.displaybandwidthbar) {
                 $('#displaybandwidthbarInfoSpan1').html(data.bandwidthused);
