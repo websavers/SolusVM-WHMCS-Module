@@ -4,7 +4,8 @@ namespace SolusVM;
 
 use SolusVM\Curl;
 use Illuminate\Database\Capsule\Manager as Capsule;
-
+use Illuminate\Support\Collection as Collection;
+use Exception;
 
 class SolusVM {
     protected $url;
@@ -79,7 +80,7 @@ class SolusVM {
             if ( ! $cport ) {
                 $cport = "5353";
             }
-            $this->url    = "http://" . $conaddr . ":" . $cport . "/api/" . $this->modType . "/command.php/";
+            $this->url    = "http://" . $conaddr . ":" . $cport . "/api/" . $this->modType . "/command.php";
             $this->fwdurl = "http://" . $conaddr . ":" . $cport;
         }
 
@@ -125,6 +126,12 @@ class SolusVM {
 
     public function apiCall( $faction, $postVars = array() ) {
         $this->result = '';
+
+        if ( !$this->curl_enabled() ) {
+            $msg = 'Curl is currently disabled';
+            $this->debugLog( 'solusvmpro', $faction, '', $msg, '', array() );
+            die($msg);
+        }
 
         if ( $faction == "fwdurl" ) {
             $result = $this->fwdurl;
@@ -181,6 +188,11 @@ class SolusVM {
 
         return $result;
 
+    }
+
+    private function curl_enabled() {
+        $disabled = explode(',', ini_get('disable_functions'));
+        return !in_array('curl_exec', $disabled);
     }
 
     public function sortReturn( $data ) {
@@ -636,7 +648,7 @@ class SolusVM {
                 )
             );
 
-            if ( $result["status"] == "success" ) {
+            if ( $this->isSuccessResponse($result) ) {
                 $vstatus = '<span style="color: #'.$vstatusAr[$result["state"]]['color'].'"><strong>' . $vstatusAr[$result["state"]]['msg'] . '</strong></span>';
             } else {
                 $vstatus = '<span style="color: #'.$vstatusAr['unavailable']['color'].'"><strong>' . $vstatusAr['unavailable']['msg'] . '</strong></span>';
@@ -984,7 +996,7 @@ class SolusVM {
 
     public static function getParamsFromVserviceID( $vserverid, $uid ) {
         /** @var stdClass $hosting */
-        foreach ( Capsule::table( 'tblhosting' )->where( 'userid', $uid )->get() as $hosting ) {
+        foreach ( SolusVM::collectionToArray(Capsule::table( 'tblhosting' )->where( 'userid', $uid )->get()) as $hosting ) {
 
             $vserverFieldRow = Capsule::table( 'tblcustomfields' )->where( 'relid', $hosting->packageid )->where( 'fieldname', 'vserverid' )->first();
             if ( ! $vserverFieldRow ) {
@@ -1134,10 +1146,36 @@ class SolusVM {
     }
 
     public function debugLog( $module, $action, $requestString, $responseData, $processedData, $replaceVars ) {
-        if ( !$this->configIni[ 'debug' ] ){
+        if ( !$this->configIni[ 'debug' ] ) {
             return;
         }
         logModuleCall( $module, $action, $requestString, $responseData, $processedData, $replaceVars );
+    }
+
+    public function isSuccessResponse( $result ) {
+        if ( isset($result["status"]) && $result["status"] == "success" ) {
+            return true;
+        }
+
+        $this->debugLog( 'solusvmpro', 'isSuccessResponse', '', $result, '', array() );
+        return false;
+    }
+
+    /**
+     * Converts Collection to array if required
+     *
+     * @param array|Collection|any $object arbitrary object.
+     *
+     * @return array
+     */
+    public function collectionToArray($object) {
+        if (is_array($object)) {
+            return $object;
+        }
+        if ($object instanceof Collection) {
+            return $object->toArray();
+        }
+        throw new Exception('Object is not an array or Illuminate\Support\Collection');
     }
 }
 
