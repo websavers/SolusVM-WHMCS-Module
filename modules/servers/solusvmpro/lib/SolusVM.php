@@ -1118,7 +1118,8 @@ class SolusVM {
     public static function loadLang( $lang = null ) {
         global $_LANG, $CONFIG;
 
-        $langDir                = __DIR__ . '/../lang/';
+        //$langDir                = __DIR__ . '/../lang/';
+        $langDir                = ROOTDIR . '/modules/servers/solusvmpro/lang/';
         $availableLangsFullPath = glob( $langDir . '*.php' );
         $availableLangs         = array();
         foreach ( $availableLangsFullPath as $availableLang ) {
