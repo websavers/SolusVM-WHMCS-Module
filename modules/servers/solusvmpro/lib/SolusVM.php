@@ -103,7 +103,7 @@ class SolusVM {
         $this->pid       = $this->getParam( "pid" ); # Product/Service ID
 
         //Parse Ini file
-        $config_file  = dirname(__DIR__) . '/configure.ini';
+        $config_file  = dirname(ROOTDIR) . '/modules/servers/solusvmpro/configure.ini';
         $this->configIni = parse_ini_file( $config_file );
 
     }
@@ -1118,7 +1118,6 @@ class SolusVM {
     public static function loadLang( $lang = null ) {
         global $_LANG, $CONFIG;
 
-        //$langDir                = __DIR__ . '/../lang/';
         $langDir                = ROOTDIR . '/modules/servers/solusvmpro/lang/';
         $availableLangsFullPath = glob( $langDir . '*.php' );
         $availableLangs         = array();

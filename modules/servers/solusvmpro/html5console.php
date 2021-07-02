@@ -17,9 +17,9 @@ $ca = new ClientArea();
 $ca->initPage();
 $ca->requireLogin();
 
-require_once __DIR__ . '/lib/Curl.php';
-require_once __DIR__ . '/lib/CaseInsensitiveArray.php';
-require_once __DIR__ . '/lib/SolusVM.php';
+require_once ROOTDIR . '/modules/servers/solusvmpro/lib/Curl.php';
+require_once ROOTDIR . '/modules/servers/solusvmpro/lib/CaseInsensitiveArray.php';
+require_once ROOTDIR . '/modules/servers/solusvmpro/lib/SolusVM.php';
 
 
 SolusVM::loadLang();
