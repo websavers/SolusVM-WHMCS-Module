@@ -1256,9 +1256,9 @@ function solusvmpro_Custom_ChangeOSTemplate( $params = '' ) {
 }
 
 function solusvmpro_ClientArea( $params ) {
-    $notCustomFuntions = [ 'reboot', 'shutdown', 'boot', 'tuntap_enable', 'tuntap_disable' ];
+    $notCustomFunctions = [ 'reboot', 'shutdown', 'boot', 'tuntap_enable', 'tuntap_disable' ];
     if ( isset( $_GET['modop'] ) && ( $_GET['modop'] == 'custom' ) ) {
-        if ( isset( $_GET['a'] ) && !in_array( $_GET['a'], $notCustomFuntions ) ) {
+        if ( isset( $_GET['a'] ) && !in_array( $_GET['a'], $notCustomFunctions ) ) {
             $functionName = 'solusvmpro_' . 'Custom_' . $_GET['a'];
             if ( function_exists( $functionName ) ) {
                 $functionName( $params );
