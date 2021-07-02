@@ -4,9 +4,9 @@ define( "CLIENTAREA", true );
 require( "../../../init.php" );
 session_start();
 
-require_once __DIR__ . '/lib/Curl.php';
-require_once __DIR__ . '/lib/CaseInsensitiveArray.php';
-require_once __DIR__ . '/lib/SolusVM.php';
+require_once ROOTDIR . '/modules/servers/solusvmpro/lib/Curl.php';
+require_once ROOTDIR . '/modules/servers/solusvmpro/lib/CaseInsensitiveArray.php';
+require_once ROOTDIR . '/modules/servers/solusvmpro/lib/SolusVM.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 use SolusVM\SolusVM;
@@ -41,5 +41,10 @@ $solusvm->apiCall( 'vserver-infoall', $callArray );
 $r = $solusvm->result;
 
 $cparams = $solusvm->clientAreaCalculations( $r );
+
+if($r['rescuemode'] != 0){
+    $solusvm->apiCall( 'vserver-rescue', $callArray );
+    $cparams['rescueData'] = $solusvm->result;
+}
 
 echo json_encode( $cparams );

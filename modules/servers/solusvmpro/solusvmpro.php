@@ -5,9 +5,9 @@
  *
  */
 
-require_once __DIR__ . '/lib/Curl.php';
-require_once __DIR__ . '/lib/CaseInsensitiveArray.php';
-require_once __DIR__ . '/lib/SolusVM.php';
+require_once ROOTDIR . '/modules/servers/solusvmpro/lib/Curl.php';
+require_once ROOTDIR . '/modules/servers/solusvmpro/lib/CaseInsensitiveArray.php';
+require_once ROOTDIR . '/modules/servers/solusvmpro/lib/SolusVM.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 use SolusVM\SolusVM;
@@ -16,8 +16,8 @@ if ( ! defined( "WHMCS" ) ) {
     die( "This file cannot be accessed directly" );
 }
 
-if ( file_exists( __DIR__ . "/custom.php" ) ) {
-    require_once( __DIR__ . "/custom.php" );
+if ( file_exists( ROOTDIR . "/custom.php" ) ) {
+    require_once( ROOTDIR . "/modules/servers/solusvmpro/custom.php" );
 }
 
 SolusVM::loadLang();
@@ -25,10 +25,11 @@ SolusVM::loadLang();
 function initConfigOption()
 {
     if(!isset($_POST['id'])){
-        $data = Capsule::table('tblproducts')->where('servertype', 'solusvmpro')->where('id', $_GET['id'])->get();
+        $data = SolusVM::collectionToArray(Capsule::table('tblproducts')->where('servertype', 'solusvmpro')->where('id', $_GET['id'])->get());
     }else{
-        $data = Capsule::table('tblproducts')->where('servertype', 'solusvmpro')->where('id', $_POST['id'])->get();
+        $data = SolusVM::collectionToArray(Capsule::table('tblproducts')->where('servertype', 'solusvmpro')->where('id', $_POST['id'])->get());
     }
+    
     $packageconfigoption = [];
     if(is_array($data) && count($data) > 0) {
         $packageconfigoption[1] = $data[0]->configoption1;
@@ -47,7 +48,7 @@ function solusvmpro_ConfigOptions() {
 
         $master_array = array();
         /** @var stdClass $row */
-        foreach ( Capsule::table( 'tblservers' )->where( 'type', 'solusvmpro' )->get() as $row ) {
+        foreach ( SolusVM::collectionToArray(Capsule::table( 'tblservers' )->where( 'type', 'solusvmpro' )->get()) as $row ) {
             $master_array[] = $row->id . " - " . $row->name;
         }
 
@@ -71,7 +72,7 @@ function solusvmpro_ConfigOptions() {
         ## List plans
         $solusvm->apiCall( 'listplans', $callArray );
 
-        if ( $solusvm->result["status"] == "success" ) {
+        if ( $solusvm->isSuccessResponse($solusvm->result) ) {
             $default_plan = $solusvm->result["plans"];
         } else {
             $default_plan = $solusvm->rawResult;
@@ -80,7 +81,7 @@ function solusvmpro_ConfigOptions() {
         ## List nodes
         $solusvm->apiCall( 'listnodes', $callArray );
 
-        if ( $solusvm->result["status"] == "success" ) {
+        if ( $solusvm->isSuccessResponse($solusvm->result) ) {
             $default_node = $solusvm->result["nodes"];
         } else {
             $default_node = $solusvm->rawResult;
@@ -89,7 +90,7 @@ function solusvmpro_ConfigOptions() {
         ## List node groups
         $solusvm->apiCall( 'listnodegroups', $callArray );
 
-        if ( $solusvm->result["status"] == "success" ) {
+        if ( $solusvm->isSuccessResponse($solusvm->result) ) {
             $default_nodegroup = $solusvm->result["nodegroups"];
         } else {
             $default_nodegroup = $solusvm->rawResult;
@@ -98,7 +99,7 @@ function solusvmpro_ConfigOptions() {
         ## List templates
         $solusvm->apiCall( 'listtemplates', $callArray );
 
-        if ( $solusvm->result["status"] == "success" ) {
+        if ( $solusvm->isSuccessResponse($solusvm->result) ) {
             $default_template = $solusvm->result["templates"];
         } else {
             $default_template = $solusvm->rawResult;
@@ -382,7 +383,7 @@ function solusvmpro_SuspendAccount( $params ) {
 
         $solusvm->apiCall( 'vserver-suspend', $callArray );
 
-        if ( $solusvm->result["status"] == "success" ) {
+        if ( $solusvm->isSuccessResponse($solusvm->result) ) {
             $result = "success";
         } else {
             $result = (string) $solusvm->result["statusmsg"];
@@ -432,7 +433,7 @@ function solusvmpro_UnsuspendAccount( $params ) {
 
         $solusvm->apiCall( 'vserver-unsuspend', $callArray );
 
-        if ( $solusvm->result["status"] == "success" ) {
+        if ( $solusvm->isSuccessResponse($solusvm->result) ) {
             $result = "success";
         } else {
             $result = (string) $solusvm->result["statusmsg"];
@@ -486,7 +487,7 @@ function solusvmpro_TerminateAccount( $params ) {
 
         $solusvm->apiCall( 'vserver-terminate', $callArray );
 
-        if ( $solusvm->result["status"] == "success" ) {
+        if ( $solusvm->isSuccessResponse($solusvm->result) ) {
             $solusvm->removeipTerminatedProduct();
 
             $solusvm->removevserveridTerminatedProduct();
@@ -537,6 +538,8 @@ function solusvmpro_AdminCustomButtonArray() {
         $_LANG["solusvmpro_reboot"]   => "reboot",
         $_LANG["solusvmpro_shutdown"] => "shutdown",
         $_LANG["solusvmpro_boot"]     => "boot",
+        $_LANG["solusvmpro_tuntap_enable"]  => "tuntap_enable",
+        $_LANG["solusvmpro_tuntap_disable"]  => "tuntap_disable",
     );
 }
 
@@ -547,6 +550,8 @@ function solusvmpro_ClientAreaCustomButtonArray() {
         $_LANG["solusvmpro_reboot"]   => "reboot",
         $_LANG["solusvmpro_shutdown"] => "shutdown",
         $_LANG["solusvmpro_boot"]     => "boot",
+        $_LANG["solusvmpro_tuntap_enable"]  => "tuntap_enable",
+        $_LANG["solusvmpro_tuntap_disable"]  => "tuntap_disable",
     );
 }
 
@@ -564,7 +569,7 @@ function solusvmpro_reboot( $params ) {
 
         $solusvm->apiCall( 'vserver-reboot', $callArray );
 
-        if ( $solusvm->result["status"] == "success" ) {
+        if ( $solusvm->isSuccessResponse($solusvm->result) ) {
             $result = "success";
         } else {
             $result = (string) $solusvm->result["statusmsg"];
@@ -599,7 +604,7 @@ function solusvmpro_boot( $params ) {
 
         $solusvm->apiCall( 'vserver-boot', $callArray );
 
-        if ( $solusvm->result["status"] == "success" ) {
+        if ( $solusvm->isSuccessResponse($solusvm->result) ) {
             $result = "success";
         } else {
             $result = (string) $solusvm->result["statusmsg"];
@@ -633,6 +638,76 @@ function solusvmpro_shutdown( $params ) {
         $callArray = array( "vserverid" => $customField["vserverid"] );
 
         $solusvm->apiCall( 'vserver-shutdown', $callArray );
+
+        if ( $solusvm->isSuccessResponse($solusvm->result) ) {
+            $result = "success";
+        } else {
+            $result = (string) $solusvm->result["statusmsg"];
+        }
+
+        return $result;
+    } catch ( Exception $e ) {
+        // Record the error in WHMCS's module log.
+        logModuleCall(
+            'shutdown',
+            __FUNCTION__,
+            $params,
+            $e->getMessage(),
+            $e->getTraceAsString()
+        );
+
+        return $e->getMessage();
+    }
+}
+
+################################################################################
+### TUN/TAP Enable function                                                  ###
+################################################################################
+
+function solusvmpro_tuntap_enable( $params ) {
+    try {
+        $solusvm     = new SolusVM( $params );
+        $customField = $solusvm->getParam( "customfields" );
+
+        ## The call string for the connection fuction
+        $callArray = array( "vserverid" => $customField["vserverid"] );
+
+        $solusvm->apiCall( 'vserver-tun-enable', $callArray );
+
+        if ( $solusvm->result["status"] == "success" ) {
+            $result = "success";
+        } else {
+            $result = (string) $solusvm->result["statusmsg"];
+        }
+
+        return $result;
+    } catch ( Exception $e ) {
+        // Record the error in WHMCS's module log.
+        logModuleCall(
+            'shutdown',
+            __FUNCTION__,
+            $params,
+            $e->getMessage(),
+            $e->getTraceAsString()
+        );
+
+        return $e->getMessage();
+    }
+}
+
+################################################################################
+### TUN/TAP Disable function                                                  ###
+################################################################################
+
+function solusvmpro_tuntap_disable( $params ) {
+    try {
+        $solusvm     = new SolusVM( $params );
+        $customField = $solusvm->getParam( "customfields" );
+
+        ## The call string for the connection fuction
+        $callArray = array( "vserverid" => $customField["vserverid"] );
+
+        $solusvm->apiCall( 'vserver-tun-disable', $callArray );
 
         if ( $solusvm->result["status"] == "success" ) {
             $result = "success";
@@ -692,7 +767,7 @@ function solusvmpro_ChangePackage( $params ) {
                 $cmem = str_replace(":", "|", $cmem);
 
                 $solusvm->apiCall( 'vserver-change-memory', array( "memory" => $cmem, "vserverid" => $customField["vserverid"] ) );
-                if ( $solusvm->result["status"] != "success" ) {
+                if ( !$solusvm->isSuccessResponse($solusvm->result) ) {
                     $resource_errors = (string) $solusvm->result["statusmsg"] . $error_divider;
                 }
 
@@ -700,7 +775,7 @@ function solusvmpro_ChangePackage( $params ) {
 
             if ( $cdisk > 0 ){
                 $solusvm->apiCall( 'vserver-change-hdd', array( "hdd" => $cdisk, "vserverid" => $customField["vserverid"] ) );
-                if ( $solusvm->result["status"] != "success" ) {
+                if ( !$solusvm->isSuccessResponse($solusvm->result) ) {
                     $resource_errors .= (string) $solusvm->result["statusmsg"] . $error_divider;
                 }
 
@@ -708,7 +783,7 @@ function solusvmpro_ChangePackage( $params ) {
 
             if ( $ccpu > 0 ){
                 $solusvm->apiCall( 'vserver-change-cpu', array( "cpu" => $ccpu, "vserverid" => $customField["vserverid"] ) );
-                if ( $solusvm->result["status"] != "success" ) {
+                if ( !$solusvm->isSuccessResponse($solusvm->result) ) {
                     $resource_errors .= (string) $solusvm->result["statusmsg"];
                 }
 
@@ -716,7 +791,7 @@ function solusvmpro_ChangePackage( $params ) {
 
             if ( $cnspeed >= 0 ){
                 $solusvm->apiCall( 'vserver-change-nspeed', array( "customnspeed" => $cnspeed, "vserverid" => $customField["vserverid"] ) );
-                if ( $solusvm->result["status"] != "success" ) {
+                if ( !$solusvm->isSuccessResponse($solusvm->result) ) {
                     $resource_errors .= (string) $solusvm->result["statusmsg"];
                 }
 
@@ -724,7 +799,7 @@ function solusvmpro_ChangePackage( $params ) {
 
             if ( $cextraip > 0 ){
                 //first() function doesn't work
-                $ipaddresses = Capsule::table('tblhosting')->select('assignedips')->where( 'id', $params['serviceid'] )->get();
+                $ipaddresses = SolusVM::collectionToArray(Capsule::table('tblhosting')->select('assignedips')->where( 'id', $params['serviceid'] )->get());
                 $ips = $ipaddresses[0]->assignedips;
 
                 $lines_arr = explode(PHP_EOL, $ips);
@@ -741,7 +816,7 @@ function solusvmpro_ChangePackage( $params ) {
 
                         $solusvm->apiCall( 'vserver-addip', array( "vserverid" => $customField["vserverid"] ) );
 
-                        if ( $solusvm->result["status"] != "success" ) {
+                        if ( !$solusvm->isSuccessResponse($solusvm->result) ) {
                             $resource_errors .= (string) $solusvm->result["statusmsg"] . $error_divider;
                             break;
                         } else {
@@ -755,7 +830,7 @@ function solusvmpro_ChangePackage( $params ) {
 
                         $solusvm->apiCall( 'vserver-delip', array( "vserverid" => $customField["vserverid"], "ipaddr" => $lines_arr[0]) );
 
-                        if ( $solusvm->result["status"] != "success" ) {
+                        if ( !$solusvm->isSuccessResponse($solusvm->result) ) {
                             $resource_errors .= (string) $solusvm->result["statusmsg"] . $error_divider;
                             break;
                         } else {
@@ -781,7 +856,7 @@ function solusvmpro_ChangePackage( $params ) {
                 "vserverid"       => $customField["vserverid"]
             );
             $solusvm->apiCall( 'vserver-change', $callArray );
-            if ( $solusvm->result["status"] == "success" ) {
+            if ( $solusvm->isSuccessResponse($solusvm->result) ) {
                 $result = "success";
             } else {
                 $result = (string) $solusvm->result["statusmsg"];
@@ -867,14 +942,20 @@ function solusvmpro_AdminServicesTabFields( $params ) {
 if ( ! function_exists( 'solusvmpro_AdminLink' ) ) {
     function solusvmpro_AdminLink( $params ) {
         try {
-            $solusvm = new SolusVM( $params );
+            $solusvm = new SolusVM($params);
 
-            $fwdurl = $solusvm->apiCall( 'fwdurl' );
+            $fwdurl = $solusvm->apiCall('fwdurl');
 
-            $code = '<form action="' . ( $fwdurl ) . '/admincp/login.php" method="post" target="_blank">
-                <input type="hidden" name="username" value="ADMINUSERNAME" />
-                <input type="hidden" name="password" value="ADMINPASSOWRD" />
-                <input type="submit" name="Submit" value="Login" />
+            $solusAdminId = (int)$solusvm->getExtData("login-button-admin-id");
+
+            $code = '<form action="' . ($fwdurl) . '/admincp/login-api.php" method="post" target="_blank">';
+            if (isset($solusAdminId) && $solusAdminId > 0) {
+                $code .= '<input type="hidden" name="admin_id" value="' . $solusAdminId . '" />';
+            }
+            $code .='<input type="hidden" name="api_id" value="'.$params["serverusername"].'" />
+                <input type="hidden" name="api_key" value="'.sha1($params["serverpassword"]).'" />
+                <input type="hidden" name="hostname" value="'.$_SERVER['HTTP_REFERER'].'" />
+                <input type="submit" name="Submit" class="btn btn-sm btn-default" value="Login" />
                 </form>';
 
             return $code;
@@ -1067,8 +1148,115 @@ function solusvmpro_Custom_ChangeVNCPassword( $params = '' ) {
 
 }
 
+function solusvmpro_Custom_ListOSTemplates( $params = '' ){
+    
+  $vt = solusvmpro_Custom_GetVirtType($params['configoption5']);
+  
+  /* This would get a live list of templates from the server. We want local 'available' options.
+  $solusvm = new SolusVM( $params );
+  $result = $solusvm->getTemplates($vt);
+  exit( json_encode( $result ) );
+  */
+
+  $results = localAPI('GetProducts', array(
+      'pid' => $params['pid'],
+  ));
+  
+  $templates = array();
+  $out = "";
+  if ($results['result'] == 'success'){
+    foreach($results['products']['product'][0]['configoptions']['configoption'] as $oslist){
+      if ($oslist['name'] == 'Operating System'){
+        foreach ($oslist['options']['option'] as $os){
+          if (!$os['hidden']){ //The 'hidden' value does not exist in the array yet. Hoping WHMCS will add it.
+            $templates[$os['id']] = array(
+              'name' => $os['name'],
+              'sysname' => $os['required'],
+            );
+          }
+        }
+      }
+    }
+    $out = array(
+        'success' => true,
+        'msg'     => $templates,
+    );
+  }
+  else{
+    $out = array(
+        'success' => false,
+        'msg'     => 'Unable to obtain list of templates from WHMCS.',
+    );
+  }
+
+  exit( json_encode($out) );
+  
+}
+
+function solusvmpro_Custom_ChangeOSTemplate( $params = '' ) {
+    global $_LANG;
+
+    $newostemplate  = $_GET['newostemplate'];
+    $vt             = solusvmpro_Custom_GetVirtType($params['configoption5']);
+    $solusvm        = new SolusVM( $params );
+    
+    $check_section = $solusvm->ostemplate_verify( $newostemplate, $vt );
+    
+    if ( $check_section ) {
+        ## The call string for the connection function
+
+        $callArray = array( "vserverid" => $_GET['vserverid'], "template" => $newostemplate );
+
+        if ( $solusvm->getExtData( "clientfunctions" ) == "disable" ) {
+            $result = (object) array(
+                'success' => false,
+                'msg'     => $_LANG['solusvmpro_functionDisabled'],
+            );
+            exit( json_encode( $result ) );
+        }
+        if ( $solusvm->getExtData( "ostemplate" ) == "disable" ) {
+            $result = (object) array(
+                'success' => false,
+                'msg'     => $_LANG['solusvmpro_functionDisabled'],
+            );
+            exit( json_encode( $result ) );
+        }
+
+        $solusvm->apiCall( 'vserver-rebuild', $callArray );
+        $r = $solusvm->result;
+
+        $success = false;
+        $message = '';
+        if ( $r["status"] == "success" ) {
+            $solusvm->setOSTemplate( $newostemplate ); //Set config option in WHMCS to new template now.
+            $success = true;
+            $message = $_LANG['solusvmpro_OSTemplateUpdated'];
+        } elseif ( $r["status"] == "error" && $r["statusmsg"] == "OS Template not specified" ) {
+            $message = $_LANG['solusvmpro_enterOSTemplate'];
+        } elseif ( $r["status"] == "error" && $r["statusmsg"] == "Not supported for this virtualization type" ) {
+            $message = $_LANG['solusvmpro_virtualizationTypeError'];
+        } else {
+            $message = $r["statusmsg"];
+        }
+        $result = (object) array(
+            'success' => $success,
+            'msg'     => $message,
+        );
+        exit( json_encode( $result ) );
+
+    } else {
+        $result = (object) array(
+            'success' => false,
+            'msg'     => $_LANG['solusvmpro_invalidOSTemplate'],
+        );
+        exit( json_encode( $result ) );
+
+    }
+
+}
+
 function solusvmpro_ClientArea( $params ) {
-    $notCustomFuntions = [ 'reboot', 'shutdown', 'boot' ];
+    $notCustomFuntions = [ 'reboot', 'shutdown', 'boot', 'tuntap_enable', 'tuntap_disable' ];
     if ( isset( $_GET['modop'] ) && ( $_GET['modop'] == 'custom' ) ) {
         if ( isset( $_GET['a'] ) && !in_array( $_GET['a'], $notCustomFuntions ) ) {
             $functionName = 'solusvmpro_' . 'Custom_' . $_GET['a'];
@@ -1097,9 +1285,9 @@ function solusvmpro_ClientArea( $params ) {
                 $callArray = array( "vserverid" => $customField["vserverid"], "nographs" => false );
                 $solusvm->apiCall( 'vserver-infoall', $callArray );
 
-                if ( $solusvm->result["status"] == "success" ) {
+                if ( $solusvm->isSuccessResponse($solusvm->result) ) {
                     $data = $solusvm->clientAreaCalculations( $solusvm->result );
-                    
+
                     return solusvmpro_customclientarea( $params, $data );
                 } else {
                     if ( function_exists( 'solusvmpro_customclientareaunavailable' ) ) {
@@ -1113,6 +1301,10 @@ function solusvmpro_ClientArea( $params ) {
                 $data = array(
                     'vserverid' => $customField["vserverid"],
                 );
+                
+                if ($_GET['debug']){
+                  $data['debug'] = true;
+                }
 
                 return array(
                     'templatefile' => 'templates/clientareaBootstrap.tpl',
@@ -1137,6 +1329,121 @@ function solusvmpro_ClientArea( $params ) {
 
         return $e->getMessage();
     }
+}
+
+/*
+ * Usage Update
+ * Info: https://developers.whmcs.com/provisioning-modules/usage-update/
+ * Run Manually: /admin/reports.php?report=disk_usage_summary&action=updatestats
+ */
+
+function solusvmpro_UsageUpdate($params)
+{
+    $solusvm = new SolusVM($params);
+
+    if (!isset($solusvm->configIni['enableUsageUpdate']) || !$solusvm->configIni['enableUsageUpdate']) {
+        return false;
+    }
+    $ownerRowsHosting = Capsule::table('tblhosting')->where('domainstatus', 'Active')->where('server', $params['serverid']);
+
+    if (isset($solusvm->configIni['updateIntervalDay'])) {
+        $ownerRowsHosting->whereRaw('lastupdate < DATE_ADD(CURDATE(),INTERVAL -' . $solusvm->configIni['updateIntervalDay'] . ' DAY)');
+    }
+    $ownerRows = $ownerRowsHosting->get();
+
+    if ($ownerRows) {
+        foreach ($ownerRows as $ownerRow) {
+            if (!$ownerRow->id) {
+                continue;
+            }
+
+            $vserverFieldRow = Capsule::table('tblcustomfields')
+                ->where('relid', $ownerRow->packageid)->where('fieldname', 'vserverid')->first();
+            $vserverValueRow = Capsule::table('tblcustomfieldsvalues')
+                ->where('fieldid', $vserverFieldRow->id)->where('relid', $ownerRow->id)->first();
+
+            $callArray = ['vserverid' => $vserverValueRow->value, 'nographs' => true, 'rdtype' => 'json'];
+            $res = $solusvm->apiCall('vserver-infoall', $callArray);
+            $r = json_decode($res);
+
+            $bandwidthData = explode(',', $r->bandwidth);
+            $bwusage = round($bandwidthData[1] / 1024 ** 2, 0, PHP_ROUND_HALF_UP);
+            $bwlimit = round($bandwidthData[0] / 1024 ** 2, 0, PHP_ROUND_HALF_UP);
+
+            $hddData = explode(',', $r->hdd);
+            $diskusage = round($hddData[1] / 1024 ** 2, 0, PHP_ROUND_HALF_UP);
+            $disklimit = round($hddData[0] / 1024 ** 2, 0, PHP_ROUND_HALF_UP);
+
+            Capsule::table('tblhosting')
+                ->where('id', $ownerRow->id)
+                ->update(
+                    [
+                        'bwusage' => $bwusage,
+                        'bwlimit' => $bwlimit,
+                        'diskusage' => $diskusage,
+                        'disklimit' => $disklimit,
+                        'lastupdate' => date('Y-m-d H:i:s')
+                    ]
+                );
+        }
+    }
+}
+
+/*
+ * Rescue Mode
+ * Info: https://docs.solusvm.com/display/DOCS/Rescue+Mode
+ */
+
+function solusvmpro_Custom_ChangeRescueMode( $params = '' ) {
+    global $_LANG;
+
+    $rescueAction      = $_GET['rescueAction'];
+    $rescueValue       = $_GET['rescueValue'];
+
+    if ( $rescueValue && $rescueAction) {
+        // The call string for the connection function
+        $callArray = array( 'vserverid' => $_GET['vserverid'], $rescueAction => $rescueValue );
+        $solusvm = new SolusVM( $params );
+
+        $solusvm->apiCall( 'vserver-rescue', $callArray );
+        $r = $solusvm->result;
+
+        if ( $r['status'] == 'success' ) {
+            $message = $_LANG['solusvmpro_rescueenabled'];
+            if($rescueAction == 'rescuedisable') {
+                $message = $_LANG['solusvmpro_rescuedisabled'];
+            }
+        } elseif ( $r['status'] == 'error') {
+            $message = $r['statusmsg'];
+        } else {
+            $message = $_LANG['solusvmpro_unknownError'];
+        }
+        $result = (object) array(
+            'success' => true,
+            'msg'     => $message,
+        );
+        exit(json_encode($result));
+    }
+
+    $result = (object)[
+        'success' => false,
+        'msg' => $_LANG['solusvmpro_unknownError'],
+    ];
+    exit(json_encode($result));
+}
+
+function solusvmpro_Custom_GetVirtType($packageconfigoption){
+  $vt = '';
+  if ( $packageconfigoption == "OpenVZ" ) {
+      $vt = "openvz";
+  } elseif ( $packageconfigoption == "Xen-PV" ) {
+      $vt = "xen";
+  } elseif ( $packageconfigoption == "Xen-HVM" ) {
+      $vt = "xen hvm";
+  } elseif ( $packageconfigoption == "KVM" ) {
+      $vt = "kvm";
+  }
+  return $vt;
 }
 
 if ( ! function_exists( 'solusvmpro_customclientareaunavailable' ) ) {

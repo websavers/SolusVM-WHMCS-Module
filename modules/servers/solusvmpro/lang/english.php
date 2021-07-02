@@ -4,15 +4,14 @@ if ( ! defined( "WHMCS" ) ) {
     die( "This file cannot be accessed directly" );
 }
 
-
 $_LANG['solusvmpro_reboot']                               = 'Reboot';
 $_LANG['solusvmpro_boot']                                 = 'Boot';
 $_LANG['solusvmpro_shutdown']                             = 'Shutdown';
 $_LANG['solusvmpro_serialConsole']                        = 'Serial Console';
 $_LANG['solusvmpro_html5Console']                         = 'HTML 5 Serial Console';
 $_LANG['solusvmpro_vnc']                                  = 'VNC';
-$_LANG['solusvmpro_rootPassword']                         = 'Root Password';
-$_LANG['solusvmpro_hostname']                             = 'Hostname';
+$_LANG['solusvmpro_rootPassword']                         = 'Change Root Password';
+$_LANG['solusvmpro_hostname']                             = 'Change Hostname';
 $_LANG['solusvmpro_consolePassword']                      = 'Console Password';
 $_LANG['solusvmpro_vncPassword']                          = 'VNC Password';
 $_LANG['solusvmpro_controlPanel']                         = 'Control Panel';
@@ -53,6 +52,7 @@ $_LANG['solusvmpro_confirmErrorPassword']                 = 'Please check that y
 $_LANG['solusvmpro_virtualizationTypeError']              = 'Function not supported for this virtualization type';
 $_LANG['solusvmpro_unknownError']                         = 'Unknown error. Contact support';
 $_LANG['solusvmpro_invalidHostname']                      = 'Invalid Hostname';
+$_LANG['solusvmpro_invalidOSTemplate']                    = 'Invalid OS Template';
 $_LANG['solusvmpro_invalidRootpassword']                  = 'Invalid root password. Root password must contain only letters, numbers, dashes and underscores. At least 6 characters long';
 $_LANG['solusvmpro_invalidVNCpassword']                   = 'Invalid VNC password. VNC password must contain only letters, numbers, dashes and underscores. At least 6 characters long';
 $_LANG['solusvmpro_newHostname']                          = 'New Hostname';
@@ -91,6 +91,21 @@ $_LANG['solusvmpro_cancel_custom_unsuspend_process']      = 'Unsuspend process h
 $_LANG['solusvmpro_cancel_custom_package_change_process'] = 'Change package process has been canceled';
 $_LANG['solusvmpro_reboot_confirm_label']                 = 'Confirm Reboot';
 $_LANG['solusvmpro_shutdown_confirm_label']               = 'Confirm Shutdown';
+$_LANG['solusvmpro_change_ostemplate_label']              = 'Change/Reinstall OS Template';
+$_LANG['solusvmpro_select_ostemplate_label']              = 'Select an OS Template';
 $_LANG['solusvmpro_cancel']                               = 'Cancel';
 $_LANG['solusvmpro_shutdown_confirm']                     = 'Are you sure you wish to power off this server?';
 $_LANG['solusvmpro_reboot_confirm']                       = 'Are you sure you wish to restart this server?';
+$_LANG['solusvmpro_ostemplate_confirm']                   = 'I understand that this will erase all data on my server and agree that I have backed up anything that I require.';
+$_LANG['solusvmpro_OSTemplateUpdated']                    = 'Operating System successfully re-initialized! You may need to wait up to 5 minutes before attempting to access the server.';
+$_LANG['solusvmpro_rescueMode']                           = 'Rescue Mode';
+$_LANG['solusvmpro_rescueImage']                          = 'Rescue Image';
+$_LANG['solusvmpro_enable']                               = 'Enable';
+$_LANG['solusvmpro_disable']                              = 'Disable';
+$_LANG['solusvmpro_processing']                           = 'Processing...';
+$_LANG['solusvmpro_user']                                 = 'User';
+$_LANG['solusvmpro_port']                                 = 'Port';
+$_LANG['solusvmpro_rescueenabled']                        = 'Enabled - Rescue mode can take several minutes before it becomes accessible on the network';
+$_LANG['solusvmpro_rescuedisabled']                       = 'Disabled - The server is now rebooting into the original system';
+$_LANG['solusvmpro_tuntap_enable']                        = 'Enable TUN/TAP';
+$_LANG['solusvmpro_tuntap_disable']                       = 'Disable TUN/TAP';

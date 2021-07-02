@@ -4,7 +4,8 @@ namespace SolusVM;
 
 use SolusVM\Curl;
 use Illuminate\Database\Capsule\Manager as Capsule;
-
+use Illuminate\Support\Collection as Collection;
+use Exception;
 
 class SolusVM {
     protected $url;
@@ -22,7 +23,7 @@ class SolusVM {
     protected $configOptionUsernamePrefix;
     protected $serviceid;
     protected $pid;
-    protected $configIni;
+    public $configIni;
     public $result = '';
     public $rawResult = '';
     public $cpHostname;
@@ -79,7 +80,7 @@ class SolusVM {
             if ( ! $cport ) {
                 $cport = "5353";
             }
-            $this->url    = "http://" . $conaddr . ":" . $cport . "/api/" . $this->modType . "/command.php/";
+            $this->url    = "http://" . $conaddr . ":" . $cport . "/api/" . $this->modType . "/command.php";
             $this->fwdurl = "http://" . $conaddr . ":" . $cport;
         }
 
@@ -102,7 +103,7 @@ class SolusVM {
         $this->pid       = $this->getParam( "pid" ); # Product/Service ID
 
         //Parse Ini file
-        $config_file  = dirname(__DIR__) . '/configure.ini';
+        $config_file  = dirname(ROOTDIR) . '/modules/servers/solusvmpro/configure.ini';
         $this->configIni = parse_ini_file( $config_file );
 
     }
@@ -125,6 +126,12 @@ class SolusVM {
 
     public function apiCall( $faction, $postVars = array() ) {
         $this->result = '';
+
+        if ( !$this->curl_enabled() ) {
+            $msg = 'Curl is currently disabled';
+            $this->debugLog( 'solusvmpro', $faction, '', $msg, '', array() );
+            die($msg);
+        }
 
         if ( $faction == "fwdurl" ) {
             $result = $this->fwdurl;
@@ -181,6 +188,11 @@ class SolusVM {
 
         return $result;
 
+    }
+
+    private function curl_enabled() {
+        $disabled = explode(',', ini_get('disable_functions'));
+        return !in_array('curl_exec', $disabled);
     }
 
     public function sortReturn( $data ) {
@@ -614,8 +626,8 @@ class SolusVM {
                 "displaytrafficgraph"  => 0,
                 "displayloadgraph"     => 0,
                 "displaymemorygraph"   => 0,
+                "displayrescuemode"    => 0,
             );
-
 
             $vstatusAr = array(
                 'online'  => array(
@@ -636,7 +648,7 @@ class SolusVM {
                 )
             );
 
-            if ( $result["status"] == "success" ) {
+            if ( $this->isSuccessResponse($result) ) {
                 $vstatus = '<span style="color: #'.$vstatusAr[$result["state"]]['color'].'"><strong>' . $vstatusAr[$result["state"]]['msg'] . '</strong></span>';
             } else {
                 $vstatus = '<span style="color: #'.$vstatusAr['unavailable']['color'].'"><strong>' . $vstatusAr['unavailable']['msg'] . '</strong></span>';
@@ -744,14 +756,19 @@ class SolusVM {
                 $cparams["ipcsv"]      = $result["ipaddresses"];
             }
             $cparams["mainip"] = $result["mainipaddress"];
-            if ( $result["type"] == "openvz" || $result["type"] == "xen" ) {
-                if ( $this->getExtData( "html5serialconsole" ) != "disable" ) {
-                    $cparams["displayhtml5console"] = 1;
-                }
-            }
+
             if ( $result["type"] == "openvz" || $result["type"] == "xen" ) {
                 if ( $this->getExtData( "serialconsole" ) != "disable" ) {
                     $cparams["displayconsole"] = 1;
+                }
+                if ( $this->getExtData( "rootpassword" ) != "disable" ) {
+                    $cparams["displayrootpassword"] = 1;
+                }
+                if ( $this->getExtData( "hostname" ) != "disable" ) {
+                    $cparams["displayhostname"] = 1;
+                }
+                if ( $this->getExtData( "html5serialconsole" ) != "disable" ) {
+                    $cparams["displayhtml5console"] = 1;
                 }
             } else {
                 if ( $this->getExtData( "vnc" ) != "disable" ) {
@@ -762,22 +779,16 @@ class SolusVM {
                 }
             }
 
+            if ( $result['type'] == 'kvm' ) {
+                $cparams['displayrescuemode'] = 1;
+                $cparams['rescuemode'] = $result['rescuemode'];
+            }
+
             if ( $this->getExtData( "controlpanelbutton" ) != "" ) {
                 $cparams["displaypanelbutton"] = 1;
                 $cparams["controlpanellink"]   = $this->getExtData( "controlpanelbutton" );
             }
 
-            if ( $result["type"] == "openvz" || $result["type"] == "xen" ) {
-                if ( $this->getExtData( "rootpassword" ) != "disable" ) {
-                    $cparams["displayrootpassword"] = 1;
-                }
-            }
-
-            if ( $this->getExtData( "hostname" ) != "disable" ) {
-                if ( $result["type"] == "openvz" || $result["type"] == "xen" ) {
-                    $cparams["displayhostname"] = 1;
-                }
-            }
 
             if ( $this->getExtData( "reboot" ) != "disable" ) {
                 $cparams["displayreboot"] = 1;
@@ -823,6 +834,14 @@ class SolusVM {
                 $cparams["memorygraphurl"]     = $url . $result['memorygraph'];
             }
             $cparams["displaygraphs"] = 1;
+        }
+        
+        if ( $this->getExtData( "tun-enable" ) != "disable" ) {
+            $cparams["displaytunenable"] = 1;
+        }
+        
+        if ( $this->getExtData( "tun-disable" ) != "disable" ) {
+            $cparams["displaytundisable"] = 1;
         }
 
         return $cparams;
@@ -898,6 +917,18 @@ class SolusVM {
 
         return $is_valid;
     }
+    
+    public function ostemplate_verify( $template = "", $type ) {
+        $is_valid = false;
+        
+        $response = $this->getTemplates($type);
+        if ($response->success){
+          $templates_arr = explode(',', $response->msg);
+          if (in_array($template, $templates_arr)) $is_valid = true;
+        }
+
+        return $is_valid;
+    }
 
     public static function validateRootPassword( $newRootPassword ) {
         $is_valid = false;
@@ -965,7 +996,7 @@ class SolusVM {
 
     public static function getParamsFromVserviceID( $vserverid, $uid ) {
         /** @var stdClass $hosting */
-        foreach ( Capsule::table( 'tblhosting' )->where( 'userid', $uid )->get() as $hosting ) {
+        foreach ( SolusVM::collectionToArray(Capsule::table( 'tblhosting' )->where( 'userid', $uid )->get()) as $hosting ) {
 
             $vserverFieldRow = Capsule::table( 'tblcustomfields' )->where( 'relid', $hosting->packageid )->where( 'fieldname', 'vserverid' )->first();
             if ( ! $vserverFieldRow ) {
@@ -1020,6 +1051,30 @@ class SolusVM {
                    );
         }
     }
+    
+    public function setOSTemplate( $newostemplate ) {
+      
+        if ( ! empty( $this->serviceid ) ) {
+          
+          //Get configoption id for the OS template and its value ID
+          $configoption = Capsule::table('tblproductconfigoptionssub')
+                 ->select('tblproductconfigoptionssub.configid', 'tblproductconfigoptionssub.id as optionid')
+                 ->where('tblproductconfigoptionssub.optionname', 'LIKE', "$newostemplate%")
+                 ->first();
+          
+          if ( !empty($configoption) ){ 
+            //logActivity("New OS Template: $newostemplate | Service ID: {$this->serviceid} | Config Option: $configoption->configid -> $configoption->optionid");
+            $results = localAPI('UpdateClientProduct', array(
+              'serviceid' => $this->serviceid,
+              'configoptions' => base64_encode(serialize(array(
+                  $configoption->configid => $configoption->optionid,
+              ))),
+            ));
+          }
+          
+        } // has serviceid
+        
+    }
 
     public function getVT() {
         $vt = '';
@@ -1035,11 +1090,35 @@ class SolusVM {
 
         return $vt;
     }
+    
+    /** 
+     * $vt is the virtualization type like "openvz"
+     */
+    public function getTemplates($vt){
+      
+      $callArray = array( "type" => $vt );
+      
+      ## List templates
+      $this->apiCall( 'listtemplates', $callArray );
+            
+      if ( $this->result["status"] == "success" ) {
+        return (object) array(
+            'success' => true,
+            'msg'     => $this->result["templates"],
+        );
+      } else {
+        return (object) array(
+            'success' => false,
+            'msg'     => $this->result["statusmessage"],
+        );
+      }
+
+    }
 
     public static function loadLang( $lang = null ) {
         global $_LANG, $CONFIG;
 
-        $langDir                = __DIR__ . '/../lang/';
+        $langDir                = ROOTDIR . '/modules/servers/solusvmpro/lang/';
         $availableLangsFullPath = glob( $langDir . '*.php' );
         $availableLangs         = array();
         foreach ( $availableLangsFullPath as $availableLang ) {
@@ -1067,10 +1146,36 @@ class SolusVM {
     }
 
     public function debugLog( $module, $action, $requestString, $responseData, $processedData, $replaceVars ) {
-        if ( !$this->configIni[ 'debug' ] ){
+        if ( !$this->configIni[ 'debug' ] ) {
             return;
         }
         logModuleCall( $module, $action, $requestString, $responseData, $processedData, $replaceVars );
+    }
+
+    public function isSuccessResponse( $result ) {
+        if ( isset($result["status"]) && $result["status"] == "success" ) {
+            return true;
+        }
+
+        $this->debugLog( 'solusvmpro', 'isSuccessResponse', '', $result, '', array() );
+        return false;
+    }
+
+    /**
+     * Converts Collection to array if required
+     *
+     * @param array|Collection|any $object arbitrary object.
+     *
+     * @return array
+     */
+    public function collectionToArray($object) {
+        if (is_array($object)) {
+            return $object;
+        }
+        if ($object instanceof Collection) {
+            return $object->toArray();
+        }
+        throw new Exception('Object is not an array or Illuminate\Support\Collection');
     }
 }
 
