@@ -103,8 +103,7 @@ class SolusVM {
         $this->pid       = $this->getParam( "pid" ); # Product/Service ID
 
         //Parse Ini file
-        $config_file  = dirname(ROOTDIR) . '/modules/servers/solusvmpro/configure.ini';
-        $this->configIni = parse_ini_file( $config_file );
+        $this->configIni = parse_ini_file( ROOTDIR . '/modules/servers/solusvmpro/configure.ini', false, INI_SCANNER_TYPED );
 
     }
 
