@@ -216,18 +216,28 @@ switch ( $action ) {
 
         $rootValueID = Capsule::table('tblcustomfields')
             ->join('tblcustomfieldsvalues', 'tblcustomfieldsvalues.fieldid', '=', 'tblcustomfields.id')
-            ->select('tblcustomfieldsvalues.fieldid as rootID')
+            ->select('tblcustomfieldsvalues.fieldid as rootID','tblcustomfields.fieldtype')
             ->where('tblcustomfields.type', 'product')
             ->where('tblcustomfieldsvalues.relid', $product->value_productid)
             ->where('tblcustomfields.fieldname', 'rootpassword')
             ->first();
+
+        $pwvalue = $extra_var['newrootpassword'];
+
+        if (!empty($pwvalue) && $rootValueID->fieldtype === 'password'){ //password type fields should be encrypted
+            // https://developers.whmcs.com/api-reference/encryptpassword/
+            $enc_result = localAPI('EncryptPassword', array('password2' => $pwvalue));
+            if ($enc_result === 'success'){
+                $pwvalue = $enc_result['password'];
+            }
+        }
 
         Capsule::table('tblcustomfieldsvalues')
             ->where('relid', $hosting_id)
             ->where('fieldid', $rootValueID->rootID)
             ->update(
                 [
-                    'value' => $extra_var['newrootpassword'],
+                    'value' => $pwvalue,
                 ]
             );
 
