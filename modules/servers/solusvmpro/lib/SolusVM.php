@@ -577,6 +577,14 @@ class SolusVM {
 
         $res = Capsule::table( 'tblcustomfields' )->where( 'relid', $this->pid )->where( 'fieldname', $field )->first();
         if ( $res ) {
+            if ($field === 'rootpassword' && !empty($value) && $res->fieldtype === 'password'){ //password type fields should be encrypted
+                // https://developers.whmcs.com/api-reference/encryptpassword/
+                $enc_result = localAPI('EncryptPassword', array('password2' => $value));
+                if ($enc_result === 'success'){
+                    $value = $enc_result['password'];
+                }
+            }
+
             $fieldValue = Capsule::table( 'tblcustomfieldsvalues' )->where( 'relid', $this->serviceid )->where( 'fieldid', $res->id )->first();
             if ( $fieldValue ) {
                 if ( $fieldValue->value !== $value ) {
