@@ -579,23 +579,24 @@ class SolusVM {
         if ( $res ) {
             if ($field === 'rootpassword' && !empty($value) && $res->fieldtype === 'password'){ //password type fields should be encrypted
                 // https://developers.whmcs.com/api-reference/encryptpassword/
-                $enc_result = localAPI('EncryptPassword', array('password2' => $value));
-                if ($enc_result === 'success'){
-                    $value = $enc_result['password'];
+                $enc_pw = localAPI('EncryptPassword', array('password2' => $value));
+                if ($enc_pw['result'] == 'success'){
+                    $value = $enc_pw['password'];
                 }
+                else logActivity("[Module solusvmpro] Unable to encrypt password to save to custom field.");
             }
 
             $fieldValue = Capsule::table( 'tblcustomfieldsvalues' )->where( 'relid', $this->serviceid )->where( 'fieldid', $res->id )->first();
             if ( $fieldValue ) {
                 if ( $fieldValue->value !== $value ) {
-                    Capsule::table( 'tblcustomfieldsvalues' )
+                    $affected = Capsule::table( 'tblcustomfieldsvalues' )
                            ->where( 'relid', $this->serviceid )
                            ->where( 'fieldid', $res->id )
                            ->update(
                                [
                                    'value' => $value,
                                ]
-                           );
+                            );
                 }
             } else {
                 Capsule::table( 'tblcustomfieldsvalues' )

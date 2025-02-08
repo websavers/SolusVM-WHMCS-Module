@@ -226,9 +226,9 @@ switch ( $action ) {
 
         if (!empty($pwvalue) && $rootValueID->fieldtype === 'password'){ //password type fields should be encrypted
             // https://developers.whmcs.com/api-reference/encryptpassword/
-            $enc_result = localAPI('EncryptPassword', array('password2' => $pwvalue));
-            if ($enc_result === 'success'){
-                $pwvalue = $enc_result['password'];
+            $enc_pw = localAPI('EncryptPassword', array('password2' => $pwvalue));
+            if ($enc_pw['result'] === 'success'){
+                $pwvalue = $enc_pw['password'];
             }
         }
 
