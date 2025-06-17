@@ -11,7 +11,7 @@
 
         var reload = false;
         var url = window.location.href;
-        patPre = '&serveraction=custom&a=';
+        patPre = '&modop=custom&a=';
         patAr = ['shutdown', 'reboot', 'boot'];
         for (var testPat in patAr) {
             pat = patPre + patAr[testPat];
@@ -186,7 +186,7 @@
                 </span>
                 <span id="displayboot" style="display: none">
                     <button class="btn btn-default"
-                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&serveraction=custom&a=boot'">
+                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=boot'">
                         {$LANG.solusvmpro_boot}
                     </button>
                 </span>
@@ -221,13 +221,13 @@
                 </span><br/>
                 <span id="displaytunenable" style="display: none">
                     <button class="btn btn-default"
-                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&serveraction=custom&a=tuntap_enable'">
+                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=tuntap_enable'">
                         {$LANG.solusvmpro_tuntap_enable}
                     </button>
                 </span>
                 <span id="displaytundisable" style="display: none">
                     <button class="btn btn-default"
-                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&serveraction=custom&a=tuntap_disable'">
+                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=tuntap_disable'">
                         {$LANG.solusvmpro_tuntap_disable}
                     </button>
                 </span>
@@ -517,7 +517,7 @@
                     <button type="button" class="btn btn-default"
                             data-dismiss="modal">{$LANG.solusvmpro_cancel}</button>
                     <input type="button" class="btn btn-warning" value="{$LANG.solusvmpro_reboot}"
-                           onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&serveraction=custom&a=reboot'">
+                           onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=reboot'">
                 </div>
             </div>
         </div>
@@ -538,7 +538,7 @@
                     <button type="button" class="btn btn-default"
                             data-dismiss="modal">{$LANG.solusvmpro_cancel}</button>
                     <input type="button" class="btn btn-warning" value="{$LANG.solusvmpro_shutdown}"
-                           onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&serveraction=custom&a=shutdown'">
+                           onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=shutdown'">
                 </div>
             </div>
         </div>

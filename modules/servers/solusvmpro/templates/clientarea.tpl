@@ -38,15 +38,15 @@
                         <td colspan="2" class="vmbuttons">
                             {if $data['displayreboot'] }
                                 <input type="button" style="width: 135px" value="{$LANG.reboot}"
-                                       onClick="window.location='clientarea.php?action=productdetails&id={$serviceid}&serveraction=custom&a=reboot'">
+                                       onClick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=reboot'">
                             {/if}
                             {if $data['displayshutdown'] }
                                 <input type="button" style="width: 135px" value="{$LANG.shutdown}"
-                                       onClick="window.location='clientarea.php?action=productdetails&id={$serviceid}&serveraction=custom&a=shutdown'">
+                                       onClick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=shutdown'">
                             {/if}
                             {if $data['displayboot'] }
                                 <input type="button" style="width: 135px" value="{$LANG.boot}"
-                                       onClick="window.location='clientarea.php?action=productdetails&id={$serviceid}&serveraction=custom&a=boot'">
+                                       onClick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=boot'">
                             {/if}
                             {if $data['displayconsole'] }
                                 <input type="button" style="width: 135px" value="{$LANG.serialConsole}"
