@@ -186,7 +186,7 @@
                 </span>
                 <span id="displayboot" style="display: none">
                     <button class="btn btn-default"
-                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=boot'">
+                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=boot&token={$token}'">
                         {$LANG.solusvmpro_boot}
                     </button>
                 </span>
@@ -221,13 +221,13 @@
                 </span><br/>
                 <span id="displaytunenable" style="display: none">
                     <button class="btn btn-default"
-                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=tuntap_enable'">
+                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=tuntap_enable&token={$token}'">
                         {$LANG.solusvmpro_tuntap_enable}
                     </button>
                 </span>
                 <span id="displaytundisable" style="display: none">
                     <button class="btn btn-default"
-                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=tuntap_disable'">
+                            onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=tuntap_disable&token={$token}'">
                         {$LANG.solusvmpro_tuntap_disable}
                     </button>
                 </span>
