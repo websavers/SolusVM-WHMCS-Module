@@ -517,7 +517,7 @@
                     <button type="button" class="btn btn-default"
                             data-dismiss="modal">{$LANG.solusvmpro_cancel}</button>
                     <input type="button" class="btn btn-warning" value="{$LANG.solusvmpro_reboot}"
-                           onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=reboot'">
+                           onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=reboot&token={$token}'">
                 </div>
             </div>
         </div>
@@ -538,7 +538,7 @@
                     <button type="button" class="btn btn-default"
                             data-dismiss="modal">{$LANG.solusvmpro_cancel}</button>
                     <input type="button" class="btn btn-warning" value="{$LANG.solusvmpro_shutdown}"
-                           onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=shutdown'">
+                           onclick="window.location='clientarea.php?action=productdetails&id={$serviceid}&modop=custom&a=shutdown&token={$token}'">
                 </div>
             </div>
         </div>
