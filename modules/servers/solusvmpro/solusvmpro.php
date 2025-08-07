@@ -1365,7 +1365,14 @@ function solusvmpro_UsageUpdate($params)
     $ownerRowsHosting = Capsule::table('tblhosting')->where('domainstatus', 'Active')->where('server', $params['serverid']);
 
     if (isset($solusvm->configIni['updateIntervalDay'])) {
-        $ownerRowsHosting->whereRaw('lastupdate < DATE_ADD(CURDATE(),INTERVAL -' . $solusvm->configIni['updateIntervalDay'] . ' DAY)');
+        /* Example: inverval is 1 day. If the last cron run was slower to get here than today, lastupdate for one or more servers could be 9:07am or later
+        * Today it could be running at 9:04am. Since this uses CURDATE(), This interval will result in list of servers where lastupdate was earlier than yesterday at 9:04am
+        * meaning it will exclude any servers that updated yesterday at or after 9:04am. 
+        * FIX: interval by one less hour to provide ample time for the prior cron run to have completed. lastupdate must be earlier than right now minus 23 hours (10:04am)
+        */
+        //$ownerRowsHosting->whereRaw('lastupdate < DATE_ADD(CURDATE(),INTERVAL -' . $solusvm->configIni['updateIntervalDay'] . ' DAY)');
+        $updateIntervalHours = $solusvm->configIni['updateIntervalDay'] * 24 - 1;
+        $ownerRowsHosting->whereRaw('lastupdate < DATE_ADD(CURDATE(),INTERVAL -' . $updateIntervalHours . ' HOUR)');
     }
     $ownerRows = $ownerRowsHosting->get();
 
