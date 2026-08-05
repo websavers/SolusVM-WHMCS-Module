@@ -1223,7 +1223,7 @@ function solusvmpro_Custom_ChangeOSTemplate( $params = '' ) {
     if ( $check_section ) {
         ## The call string for the connection function
 
-        $callArray = array( "vserverid" => $_GET['vserverid'], "template" => $newostemplate );
+        $callArray = array( "vserverid" => $params['customfields']['vserverid'], "template" => $newostemplate );
 
         if ( $solusvm->getExtData( "clientfunctions" ) == "disable" ) {
             $result = (object) array(
