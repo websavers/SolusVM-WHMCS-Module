@@ -33,6 +33,7 @@ $(function () {
 
             button.html('<span class="glyphicon glyphicon-refresh spinning"></span> ' + lang['solusvmpro_processing']);
             button.prop('disabled', true);
+            
             var ajaxData = {
                 modop: 'custom',
                 a: 'ChangeRescueMode',
@@ -42,8 +43,13 @@ $(function () {
                 ac: 'Custom_ChangeRescueMode'
             };
 
+            let url = new URL(document.location.href);
+            let params = new URLSearchParams(url.search);
+            params.append('token', token);
+            url.search = params.toString();
+
             $.ajax({
-                url: document.location.href + token,
+                url: url.toString(),
                 data: ajaxData,
                 cache: false,
                 dataType: 'json'/*,

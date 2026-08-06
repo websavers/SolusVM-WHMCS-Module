@@ -37,6 +37,7 @@ $(function () {
 
             button.html('<span class="glyphicon glyphicon-refresh spinning"></span> ' + lang['solusvmpro_change']);
             button.prop('disabled', true);
+            
             var ajaxData = {
                 modop: 'custom',
                 a: 'ChangeRootPassword',
@@ -44,8 +45,14 @@ $(function () {
                 ajax: 1,
                 ac: 'Custom_ChangeRootPassword'
             };
+
+            let url = new URL(document.location.href);
+            let params = new URLSearchParams(url.search);
+            params.append('token', token);
+            url.search = params.toString();
+
             $.ajax({
-                url: document.location.href + token,
+                url: url.toString(),
                 data: ajaxData,
                 cache: false,
                 dataType: 'json'/*,

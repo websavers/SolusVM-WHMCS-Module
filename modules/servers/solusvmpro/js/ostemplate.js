@@ -77,6 +77,7 @@ $(function () {
 
             button.html('<span class="glyphicon glyphicon-refresh spinning"></span> ' + lang['solusvmpro_change']);
             button.prop('disabled', true);
+
             var ajaxData = {
                 vserverid: vserverid,
                 modop: 'custom',
@@ -85,9 +86,14 @@ $(function () {
                 ajax: 1,
                 ac: 'Custom_ChangeOSTemplate'
             };
+
+            let url = new URL(document.location.href);
+            let params = new URLSearchParams(url.search);
+            params.append('token', token);
+            url.search = params.toString();
+            
             $.ajax({
-                /*type: "POST",*/
-                url: document.location.href + token,
+                url: url.toString(),
                 data: ajaxData,
                 cache: false,
                 dataType: 'json'/*,

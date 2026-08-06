@@ -110,3 +110,4 @@ $_LANG['solusvmpro_rescueenabled']                        = 'Enabled - Rescue mo
 $_LANG['solusvmpro_rescuedisabled']                       = 'Disabled - The server is now rebooting into the original system';
 $_LANG['solusvmpro_tuntap_enable']                        = 'Enable TUN/TAP';
 $_LANG['solusvmpro_tuntap_disable']                       = 'Disable TUN/TAP';
+$_LANG['solusvmpro_invalidToken']                         = 'Invalid CSRF Token';
