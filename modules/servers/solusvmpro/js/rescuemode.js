@@ -43,13 +43,10 @@ $(function () {
                 ac: 'Custom_ChangeRescueMode'
             };
 
-            let url = new URL(document.location.href);
-            let params = new URLSearchParams(url.search);
-            params.append('token', token);
-            url.search = params.toString();
-
+            ajaxData.token = token.indexOf('token=') !== -1 ? token.split('token=')[1] : token;
             $.ajax({
-                url: url.toString(),
+                type: "POST",
+                url: document.location.href.split('#')[0],
                 data: ajaxData,
                 cache: false,
                 dataType: 'json'/*,

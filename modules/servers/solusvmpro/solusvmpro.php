@@ -992,15 +992,7 @@ if ( ! function_exists( 'solusvmpro_AdminLink' ) ) {
 function solusvmpro_Custom_ChangeHostname( $params = '' ) {
     global $_LANG;
 
-    if ($_REQUEST['token'] !== $_SESSION['solusvm_token']){
-        $result = (object) array(
-            'success' => false,
-            'msg'     => $_LANG['solusvmpro_invalidToken'],
-        );
-        exit( json_encode( $result ) );
-    }
-
-    $newhostname   = $_GET['newhostname'];
+    $newhostname   = isset( $_POST['newhostname'] ) ? $_POST['newhostname'] : '';
     $check_section = SolusVM::dns_verify_rdns_section( $newhostname );
     if ( $check_section ) {
         ## The call string for the connection function
@@ -1058,16 +1050,7 @@ function solusvmpro_Custom_ChangeHostname( $params = '' ) {
 function solusvmpro_Custom_ChangeRootPassword( $params = '' ) {
     global $_LANG;
 
-    if ($_REQUEST['token'] !== $_SESSION['solusvm_token']){
-        //logActivity($_SESSION['solusvm_token']); ///DEBUG
-        $result = (object) array(
-            'success' => false,
-            'msg'     => $_LANG['solusvmpro_invalidToken'],
-        );
-        exit( json_encode( $result ) );
-    }
-
-    $newrootpassword      = $_GET['newrootpassword'];
+    $newrootpassword      = isset( $_POST['newrootpassword'] ) ? $_POST['newrootpassword'] : '';
     $checkNewRootPassword = SolusVM::validateRootPassword( $newrootpassword );
     if ( $checkNewRootPassword ) {
         ## The call string for the connection function
@@ -1125,15 +1108,7 @@ function solusvmpro_Custom_ChangeRootPassword( $params = '' ) {
 function solusvmpro_Custom_ChangeVNCPassword( $params = '' ) {
     global $_LANG;
 
-    if ($_REQUEST['token'] !== $_SESSION['solusvm_token']){
-        $result = (object) array(
-            'success' => false,
-            'msg'     => $_LANG['solusvmpro_invalidToken'],
-        );
-        exit( json_encode( $result ) );
-    }
-
-    $newvncpassword      = $_GET['newvncpassword'];
+    $newvncpassword      = isset( $_POST['newvncpassword'] ) ? $_POST['newvncpassword'] : '';
     $checkNewVNCPassword = SolusVM::validateVNCPassword( $newvncpassword );
     if ( $checkNewVNCPassword ) {
         ## The call string for the connection function
@@ -1308,17 +1283,11 @@ function solusvmpro_Custom_ChangeOSTemplate( $params = '' ) {
 }
 
 function solusvmpro_ClientArea( $params ) {
-
-    $notCustomFunctions = [ 'reboot', 'shutdown', 'boot', 'tuntap_enable', 'tuntap_disable' ];
-    if ( isset( $_GET['modop'] ) && ( $_GET['modop'] == 'custom' ) ) {
-        if ( isset( $_GET['a'] ) && !in_array( $_GET['a'], $notCustomFunctions ) ) {
-            /** 
-             * Use our own token since these custom functions don't benefit from WHMCS's automatic token verification
-             */
-            if ( !isset( $_SESSION['solusvm_token']) ){ 
-                $_SESSION['solusvm_token'] = md5(uniqid(mt_rand(), true));
-            }
-            $functionName = 'solusvmpro_' . 'Custom_' . $_GET['a'];
+    $notCustomFuntions = [ 'reboot', 'shutdown', 'boot' ];
+    if ( isset( $_REQUEST['modop'] ) && ( $_REQUEST['modop'] == 'custom' ) ) {
+        if ( isset( $_REQUEST['a'] ) && !in_array( $_REQUEST['a'], $notCustomFuntions ) ) {
+            check_token();
+            $functionName = 'solusvmpro_' . 'Custom_' . $_REQUEST['a'];
             if ( function_exists( $functionName ) ) {
                 $functionName( $params );
             } else {
@@ -1473,7 +1442,7 @@ function solusvmpro_Custom_ChangeRescueMode( $params = '' ) {
     }
 
     $allowedActions = array( 'rescueenable', 'rescuedisable' );
-    $rescueAction   = isset( $_GET['rescueAction'] ) ? $_GET['rescueAction'] : '';
+    $rescueAction   = isset( $_POST['rescueAction'] ) ? $_POST['rescueAction'] : '';
 
     if ( in_array( $rescueAction, $allowedActions, true ) ) {
         $callArray = array(
