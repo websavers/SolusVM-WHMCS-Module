@@ -28,17 +28,16 @@
 
         if (!reload) {
             var vserverid = {/literal}{$data.vserverid}{literal};
-            var token = "{/literal}{$solusvm_token}{literal}";
             var token = '&token={/literal}{$token}{literal}';
             window.solusvmpro_get_and_fill_client_data(vserverid);
             window.solusvmpro_hostname(vserverid, {
                 'solusvmpro_invalidHostname': '{/literal}{$LANG.solusvmpro_invalidHostname}{literal}',
                 'solusvmpro_change': '{/literal}{$LANG.solusvmpro_change}{literal}'
-            },token);
+            }, token);
             window.solusvmpro_ostemplate(vserverid, {
                 'solusvmpro_invalidOSTemplate': '{/literal}{$LANG.solusvmpro_invalidOSTemplate}{literal}',
                 'solusvmpro_change': '{/literal}{$LANG.solusvmpro_change}{literal}'
-            },token);
+            }, token);
             window.solusvmpro_rootpassword(vserverid, {
                 'solusvmpro_invalidRootpassword': '{/literal}{$LANG.solusvmpro_invalidRootpassword}{literal}',
                 'solusvmpro_change': '{/literal}{$LANG.solusvmpro_change}{literal}',
