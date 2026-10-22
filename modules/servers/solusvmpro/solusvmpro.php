@@ -1215,7 +1215,7 @@ function solusvmpro_Custom_ListOSTemplates( $params = '' ){
 function solusvmpro_Custom_ChangeOSTemplate( $params = '' ) {
     global $_LANG;
 
-    $newostemplate  = $_GET['newostemplate'];
+    $newostemplate  = isset( $_POST['newostemplate'] ) ? $_POST['newostemplate'] : '';
     $vt             = solusvmpro_Custom_GetVirtType($params['configoption5']);
     $solusvm        = new SolusVM( $params );
     
