@@ -1215,14 +1215,6 @@ function solusvmpro_Custom_ListOSTemplates( $params = '' ){
 function solusvmpro_Custom_ChangeOSTemplate( $params = '' ) {
     global $_LANG;
 
-    if ($_REQUEST['token'] !== $_SESSION['solusvm_token']){
-        $result = (object) array(
-            'success' => false,
-            'msg'     => $_LANG['solusvmpro_invalidToken'],
-        );
-        exit( json_encode( $result ) );
-    }
-
     $newostemplate  = $_GET['newostemplate'];
     $vt             = solusvmpro_Custom_GetVirtType($params['configoption5']);
     $solusvm        = new SolusVM( $params );
