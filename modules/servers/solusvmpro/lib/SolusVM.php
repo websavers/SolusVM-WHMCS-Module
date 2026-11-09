@@ -60,11 +60,14 @@ class SolusVM {
         $this->idkey   = decrypt( $row->password );
         $this->extData = $this->serverExtra( array( 'master' => $this->masterID ) );
 
+        /*
         if ( $this->getExtData( "connect-via-hostname" ) == "yes" ) {
             $conaddr = $row->hostname;
         } else {
             $conaddr = $row->ipaddress;
         }
+        */
+        $conaddr = $row->hostname;
 
         $cport = 0;
         if ( $this->getExtData( "port" ) ) {
