@@ -72,13 +72,15 @@ class SolusVM {
         }
         if ( $row->secure ) {
             if ( ! $cport ) {
-                $cport = "5656";
+                //$cport = "5656";
+                $cport = "443";
             }
             $this->url    = "https://" . $conaddr . ":" . $cport . "/api/" . $this->modType . "/command.php";
             $this->fwdurl = "https://" . $conaddr . ":" . $cport;
         } else {
             if ( ! $cport ) {
-                $cport = "5353";
+                //$cport = "5353";
+                $cport = "80";
             }
             $this->url    = "http://" . $conaddr . ":" . $cport . "/api/" . $this->modType . "/command.php";
             $this->fwdurl = "http://" . $conaddr . ":" . $cport;
@@ -169,6 +171,12 @@ class SolusVM {
 
         $curl->post( $this->url, $postfields );
         $result = $curl->rawResponse;
+
+        $error = array(
+            "httpStatusCode" => $curl->httpStatusCode,
+            "effectiveUrl" => $curl->effectiveUrl,
+            "curlErrorMessage" => $curl->curlErrorMessage,
+        );
 
         ## This will give you the debug output if debug=on is defined in the servers hash field
         if ( $this->getExtData( "debug" ) == "on" ) {
